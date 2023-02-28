@@ -10,6 +10,8 @@ public class Task : BaseEntity
 
     public int ExecutorId { get; set; }
 
+    public User Executor { get; set; }
+
     public int Points { get; set; }
 
     public CategoryOfTask CategoryOfTask { get; set; }
