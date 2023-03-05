@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
 
-[Route("api/accounts")]
+[Route("api/[Controller]/[action]")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -47,8 +47,7 @@ public class UserController : ControllerBase
 
     [Registration]
     [HttpPost]
-    [Route("registration")]
-    public async Task<ActionResult< UserViewModelResponse >> Create(UserViewModelRegistration model)
+    public async Task<ActionResult< UserViewModelResponse >> Registration(UserViewModelRegistration model)
     {
         try
         {
@@ -56,7 +55,7 @@ public class UserController : ControllerBase
             var res = await _userService.Registration(user);
             var result = _mapper.Map<UserViewModelResponse>(res);
 
-            return Created(new Uri($"http://localhost:5165/accounts/{res.Id}"), result);
+            return Created(new Uri($"http://localhost:5165/User/GetById/{res.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
         {

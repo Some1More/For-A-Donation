@@ -22,6 +22,6 @@ public class UserViewModelRequest
     public Role Role { get; set; }
 
 
-    [Range(1, 9999999999999999999, ErrorMessage = "Value is out of range")]
+    [Range(1, int.MaxValue, ErrorMessage = "Value is out of range")]
     public int? FamilyId { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels;
+using Task = For_A_Donation.Models.DataBase.Task;
 
 namespace For_A_Donation.Helpers;
 
@@ -15,5 +16,9 @@ public class MappingProfile : Profile
         CreateMap<User, UserViewModelResponse>();
 
         CreateMap<UserProgress, UserProgressViewModelResponce>();
+
+        CreateMap<TaskViewModelRequest, Task>();
+
+        CreateMap<Task, TaskViewModelResponse>();
     }
 }

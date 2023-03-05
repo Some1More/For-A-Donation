@@ -4,6 +4,8 @@ namespace For_A_Donation.Models.ViewModels;
 
 public class UserViewModelResponse
 {
+    public int Id { get; set; }
+
     public string Name { get; set; }
 
     public string PhoneNumber { get; set; }
