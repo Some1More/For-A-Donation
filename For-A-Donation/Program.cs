@@ -16,7 +16,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<Context>(option => option.UseSqlite("Data Source = For-A-Donation.db"));
 
-builder.Services.AddTransient(typeof(IRepositoryService<>), typeof(RepositoryService<>));
+builder.Services.AddScoped<IFamilyService, FamilyService>();
+builder.Services.AddScoped<IProgressService, ProgressService>();
+builder.Services.AddScoped<IRewardService, RewardService>();
+builder.Services.AddScoped<ITaskServicecs, TaskService>();
+builder.Services.AddScoped<IUserProgressService, UserProgressService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

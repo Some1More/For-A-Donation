@@ -4,6 +4,12 @@ namespace For_A_Donation.Models.DataBase;
 
 public class User : BaseEntity
 {
+    public string PhoneNumber { get; set; }
+
+    public string Password { get; set; }
+
+    public Role Role { get; set; }
+
     public string Name { get; set; }
 
     public Gender Gender { get; set; }
@@ -14,9 +20,7 @@ public class User : BaseEntity
 
     public Family Family { get; set; }
 
-    public string PhoneNumber { get; set; }
+    public List<Task> CreatedTasks { get; set; } = new();
 
-    public string Password { get; set; }
-
-    public Role Role { get; set; }
+    public List<Task> CompleteTasks { get; set; } = new();
 }

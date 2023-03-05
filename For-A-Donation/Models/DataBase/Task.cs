@@ -12,6 +12,10 @@ public class Task : BaseEntity
 
     public User Executor { get; set; }
 
+    public int CustomerId { get; set; }
+
+    public User Customer { get; set; }
+
     public int Points { get; set; }
 
     public CategoryOfTask CategoryOfTask { get; set; }
