@@ -25,21 +25,21 @@ public class ProgressService : IProgressService
         return _db.Progress.AsNoTracking().Where(x => x.RewardId == rewardId).ToList();
     }
 
-    public async Task<List<Progress>> Create(List<Progress> progress)
+    /*public async Task<List<Progress>> Create(List<Progress> progress)
     {
         await _db.Progress.AddRangeAsync(progress);
         await _db.SaveChangesAsync();
         
         return progress;
-    }
+    }*/
 
-    public async Task<List<Progress>> Update(List<Progress> progress)
+    /*public async Task<List<Progress>> Update(List<Progress> progress)
     {   
         _db.Progress.UpdateRange(progress);
         await _db.SaveChangesAsync();
 
         return progress;
-    }
+    }*/
 
     public async Task Delete(int id)
     {

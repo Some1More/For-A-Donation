@@ -3,7 +3,7 @@
 namespace For_A_Donation.Models.DataBase;
 
 /// <summary>
-/// Для создания задачи
+/// Для создания награды
 /// </summary>
 public class Progress : BaseEntity
 {

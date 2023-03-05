@@ -5,7 +5,7 @@ namespace For_A_Donation.Models.ViewModels;
 
 public class TaskViewModelRequest
 {
-    [Required]
+    [Required(ErrorMessage = "Name is required")]
     public string? Name { get; set; }
 
     public string? Description { get; set; }

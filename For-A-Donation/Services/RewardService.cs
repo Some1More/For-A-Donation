@@ -98,6 +98,28 @@ public class RewardService : IRewardService
         return reward;
     }
 
+    public async Task<Reward> GottenReward(int id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("Id <= 0", nameof(id));
+        }
+
+        var reward = _db.Rewards.Find(id);
+
+        if (reward == null)
+        {
+            throw new NotFoundException(nameof(Reward), "Reward with this id was not founded");
+        }
+
+        reward.IsGotten = true;
+
+        _db.Rewards.Update(reward);
+        await _db.SaveChangesAsync();
+
+        return reward;
+    }
+
     public async Task Delete(int id)
     {
         if (id <= 0)

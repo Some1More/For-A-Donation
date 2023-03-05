@@ -20,5 +20,15 @@ public class MappingProfile : Profile
         CreateMap<TaskViewModelRequest, Task>();
 
         CreateMap<Task, TaskViewModelResponse>();
+
+        CreateMap<RewardViewModelRequest, Reward>();
+
+        CreateMap<Reward, RewardViewModelResponse>();
+
+        CreateMap<Reward, RewardListViewModelResponse>();
+
+        CreateMap<ProgressViewModel, Progress>();
+
+        CreateMap<Progress, ProgressViewModel>();
     }
 }
