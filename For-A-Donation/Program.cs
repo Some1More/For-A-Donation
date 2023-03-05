@@ -2,6 +2,7 @@ using For_A_Donation.Models.DataBase;
 using For_A_Donation.Services;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using For_A_Donation.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseMiddleware<AuthenticationMiddleware>();
 
 app.MapControllers();
 
