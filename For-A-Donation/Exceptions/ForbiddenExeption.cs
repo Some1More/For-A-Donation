@@ -1,4 +1,4 @@
-﻿namespace AnimalAPI.Exceptions;
+﻿namespace For_A_Donation.Exceptions;
 
 public class ForbiddenExeption: Exception
 {

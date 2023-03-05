@@ -1,5 +1,4 @@
-﻿using AnimalAPI.Exceptions;
-using AnimalAPI.Helpers.Attributes;
+﻿using AnimalAPI.Helpers.Attributes;
 using AutoMapper;
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;

@@ -1,5 +1,4 @@
-﻿using AnimalAPI.Exceptions;
-using For_A_Donation.Exceptions;
+﻿using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;

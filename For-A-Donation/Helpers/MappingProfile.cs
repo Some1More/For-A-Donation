@@ -30,5 +30,11 @@ public class MappingProfile : Profile
         CreateMap<ProgressViewModel, Progress>();
 
         CreateMap<Progress, ProgressViewModel>();
+
+        CreateMap<FamilyViewModelRequest, Family>();
+
+        CreateMap<Family, FamilyViewModelResponse>();
+
+        CreateMap<User, UserListViewModelResponse>();
     }
 }
