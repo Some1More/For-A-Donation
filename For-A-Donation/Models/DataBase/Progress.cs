@@ -3,13 +3,15 @@
 namespace For_A_Donation.Models.DataBase;
 
 /// <summary>
-/// Для создания задачи
+/// Для создания награды
 /// </summary>
 public class Progress : BaseEntity
 {
-    public CategoryOfTask CategoryOfTask { get; set; }
+    public int RewardId { get; set; }
 
-    public int PointsNow { get; set; } = 0;
+    public Reward Reward { get; set; }
+
+    public CategoryOfTask CategoryOfTask { get; set; }
 
     public int PointsEnd { get; set;}
 }

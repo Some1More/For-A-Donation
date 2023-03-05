@@ -2,5 +2,5 @@
 
 public class Family : BaseEntity
 {
-    public List<int> MembersId { get; set; }
+    public List<User> Members { get; set; } = new();
 }
