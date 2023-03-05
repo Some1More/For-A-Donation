@@ -1,6 +1,6 @@
 ﻿namespace For_A_Donation.Models.DataBase;
 
-public class BaseEntity : IEntity
+public class BaseEntity
 {
     public int Id { get; set; }
 }
