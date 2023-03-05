@@ -5,6 +5,7 @@ using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 
 namespace For_A_Donation.Controllers;
 
@@ -13,16 +14,18 @@ namespace For_A_Donation.Controllers;
 public class TaskController : ControllerBase
 {
     private readonly ITaskServicecs _taskService;
+    private readonly IUserProgressService _userProgressService;
     private readonly IMapper _mapper;
 
-    public TaskController(ITaskServicecs taskService, IMapper mapper)
+    public TaskController(ITaskServicecs taskService, IUserProgressService userProgressService, IMapper mapper)
     {
         _taskService = taskService;
+        _userProgressService = userProgressService;
         _mapper = mapper;
     }
 
     [HttpGet]
-    public ActionResult<List<TaskViewModelResponse>> GetAll()
+    public ActionResult< List<TaskViewModelResponse> > GetAll()
     {
         var res = _taskService.GetAll();
         var result = _mapper.Map<List<TaskViewModelResponse>>(res);
@@ -32,7 +35,7 @@ public class TaskController : ControllerBase
 
     [HttpGet]
     [Route("{id:int}")]
-    public ActionResult<TaskViewModelResponse> GetById(int id)
+    public ActionResult< TaskViewModelResponse > GetById(int id)
     {
         try
         {
@@ -53,7 +56,7 @@ public class TaskController : ControllerBase
 
     [HttpGet]
     [Route("{name}")]
-    public ActionResult<TaskViewModelResponse> GetByName(string name)
+    public ActionResult< TaskViewModelResponse > GetByName(string name)
     {
         try
         {
@@ -74,7 +77,7 @@ public class TaskController : ControllerBase
 
     [HttpGet]
     [Route("{numberCategory:int}")]
-    public ActionResult<List<TaskViewModelResponse>> GetByCategory(int numberCategory)
+    public ActionResult<List< TaskViewModelResponse >> GetByCategory(int numberCategory)
     {
         var category = (CategoryOfTask)Enum.ToObject(typeof(CategoryOfTask), numberCategory);
         var res = _taskService.GetByCategory(category);
@@ -84,7 +87,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TaskViewModelResponse>> Create(TaskViewModelRequest model)
+    public async Task<ActionResult< TaskViewModelResponse >> Create(TaskViewModelRequest model)
     {
         try
         {
@@ -102,7 +105,7 @@ public class TaskController : ControllerBase
 
     [HttpPut]
     [Route("{id:int}")]
-    public async Task<ActionResult<TaskViewModelResponse>> Update(int id, TaskViewModelRequest model)
+    public async Task<ActionResult< TaskViewModelResponse >> Update(int id, TaskViewModelRequest model)
     {
         try
         {
@@ -121,6 +124,31 @@ public class TaskController : ControllerBase
         catch (ObjectNotUniqueException ex)
         {
             return Conflict(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut]
+    [Route("{id:int},{userId:int}")]
+    public async Task<ActionResult> FinishedTask(int id, int userId)
+    {
+        try
+        {
+            var task = await _taskService.FinishedTask(id);
+
+            UserProgress progress = new() { UserId = userId, Points = task.Points, CategoryOfTask = task.CategoryOfTask };
+            await _userProgressService.Update(progress);
+
+            var result = _mapper.Map<TaskViewModelResponse>(task);
+
+            return Ok();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
         }
         catch (ArgumentException ex)
         {

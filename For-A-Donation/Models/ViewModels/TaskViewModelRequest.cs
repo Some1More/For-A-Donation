@@ -1,5 +1,4 @@
-﻿using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.Enums;
+﻿using For_A_Donation.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace For_A_Donation.Models.ViewModels;

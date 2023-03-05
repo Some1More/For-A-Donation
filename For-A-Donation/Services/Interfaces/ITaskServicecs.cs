@@ -56,6 +56,15 @@ public interface ITaskServicecs
     Task<Task> Update(Task task);
 
     /// <summary>
+    /// Выполнение задачи
+    /// </summary>
+    /// <param name="id"> Id задачи </param>
+    /// <returns> Завершённая задача </returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="NotFoundException"></exception>
+    Task<Task> FinishedTask(int id);
+
+    /// <summary>
     /// Удаление задач
     /// </summary>
     /// <param name="id"> Id задачи </param>

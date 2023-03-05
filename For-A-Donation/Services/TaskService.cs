@@ -98,6 +98,28 @@ public class TaskService : ITaskServicecs
         return task;
     }
 
+    public async Task<Task> FinishedTask(int id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("Id <= 0", nameof(id));
+        }
+
+        var task = _db.Tasks.Find(id);
+
+        if (task == null)
+        {
+            throw new NotFoundException(nameof(Task), "Task with this id was not founded");
+        }
+
+        task.IsFinished = true;
+
+        _db.Tasks.Update(task);
+        await _db.SaveChangesAsync();
+
+        return task;
+    }
+
     public async System.Threading.Tasks.Task Delete(int id)
     {
         if (id <= 0)

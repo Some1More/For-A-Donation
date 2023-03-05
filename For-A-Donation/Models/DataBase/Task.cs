@@ -24,5 +24,5 @@ public class Task : BaseEntity
 
     public DateTime DateTimeFinish { get; set; }
 
-    public bool IsFinished { get; set; } = false;
+    public bool IsFinished { get; set; }
 }

@@ -15,11 +15,13 @@ namespace For_A_Donation.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IUserProgressService _userProgressService;
     private readonly IMapper _mapper;
 
-    public UserController(IUserService userService, IMapper mapper)
+    public UserController(IUserService userService, IUserProgressService userProgressService, IMapper mapper)
     {
         _userService = userService;
+        _userProgressService = userProgressService;
         _mapper = mapper;
     }
 
@@ -52,7 +54,11 @@ public class UserController : ControllerBase
         try
         {
             var user = _mapper.Map<User>(model);
+
             var res = await _userService.Registration(user);
+            var progress = await _userProgressService.Create(res.Id);
+            res.Progress = progress;
+
             var result = _mapper.Map<UserViewModelResponse>(res);
 
             return Created(new Uri($"http://localhost:5165/User/GetById/{res.Id}"), result);

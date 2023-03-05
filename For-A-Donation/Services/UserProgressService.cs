@@ -1,4 +1,5 @@
 ﻿using For_A_Donation.Models.DataBase;
+using For_A_Donation.Models.Enums;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
@@ -26,8 +27,17 @@ public class UserProgressService : IUserProgressService
         return res;
     }
 
-    public async Task<List<UserProgress>> Create(List<UserProgress> userProgress)
+    public async Task<List<UserProgress>> Create(int userId)
     {
+        List<UserProgress> userProgress = new();
+
+        foreach (var category in Enum.GetValues(typeof(CategoryOfTask)))
+        {
+            userProgress.Add(new UserProgress() { UserId = userId,
+                                                    Points = 0,
+                                                    CategoryOfTask = (CategoryOfTask)category});
+        }
+
         await _db.UserProgress.AddRangeAsync(userProgress);
         await _db.SaveChangesAsync();
 
