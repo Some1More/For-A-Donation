@@ -10,14 +10,14 @@ public interface IUserProgressService
     /// </summary>
     /// <param name="userId"> Id пользователя </param>
     /// <returns> Список прогресса по каждой категории </returns>
-    List<UserProgress> GetByUserId(int userId);
+    List<UserProgress> GetByUserId(Guid userId);
 
     /// <summary>
     /// Создание пустого прогресса пользователя по каждой категории при регистрации
     /// </summary>
     /// <param name="userId"> Прогресс пользователя по всем категориям </param>
     /// <returns> Пустой список прогресса по каждой категории </returns>
-    Task<List<UserProgress>> Create(int userId);
+    Task<List<UserProgress>> Create(Guid userId);
 
 
     /// <summary>

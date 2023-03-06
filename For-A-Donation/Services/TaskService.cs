@@ -21,13 +21,8 @@ public class TaskService : ITaskServicecs
         return _db.Tasks.AsNoTracking().ToList();
     }
 
-    public Task GetById(int id)
+    public Task GetById(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Tasks.AsNoTracking().SingleOrDefault(x => x.Id == id);
 
         if (res == null)
@@ -77,11 +72,6 @@ public class TaskService : ITaskServicecs
 
     public async Task<Task> Update(Task task)
     {
-        if (task.Id <= 0)
-        {
-            throw new ArgumentException("task Id <= 0", nameof(task));
-        }
-
         if (_db.Tasks.AsNoTracking().SingleOrDefault(x => x.Id == task.Id) == null)
         {
             throw new NotFoundException(nameof(task), "Task with this id was not founded");
@@ -98,13 +88,8 @@ public class TaskService : ITaskServicecs
         return task;
     }
 
-    public async Task<Task> FinishedTask(int id)
+    public async Task<Task> FinishedTask(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("Id <= 0", nameof(id));
-        }
-
         var task = _db.Tasks.Find(id);
 
         if (task == null)
@@ -120,13 +105,8 @@ public class TaskService : ITaskServicecs
         return task;
     }
 
-    public async System.Threading.Tasks.Task Delete(int id)
+    public async System.Threading.Tasks.Task Delete(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Tasks.SingleOrDefault(x => x.Id == id);
 
         if (res == null)

@@ -10,15 +10,14 @@ public class TaskViewModelRequest
 
     public string? Description { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Value is out of range")]
-    public int ExecutorId { get; set; }
+    public Guid ExecutorId { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Value is out of range")]
-    public int CustomerId { get; set; }
+    public Guid CustomerId { get; set; }
 
     [Range(0, int.MaxValue, ErrorMessage = "Value is out of range")]
     public int Points { get; set; }
 
+    [Range(0, 4, ErrorMessage = "Value is out of range")]
     public CategoryOfTask CategoryOfTask { get; set; }
 
     public DateTime DateTimeFinish { get; set; }

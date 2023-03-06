@@ -4,7 +4,7 @@ namespace For_A_Donation.Models.ViewModels;
 
 public class UserListViewModelResponse
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public string Name { get; set; }
 

@@ -18,17 +18,16 @@ public interface IRewardService
     /// </summary>
     /// <param name="id"> Id награды </param>
     /// <returns> Награда </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Reward GetById(int id);
+    Reward GetById(Guid id);
 
     /// <summary>
     /// Получение награды по имени
     /// </summary>
     /// <param name="name"> Имя награды </param>
     /// <returns> Награда </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     Reward GetByName(string name);
     
     /// <summary>
@@ -52,7 +51,6 @@ public interface IRewardService
     /// </summary>
     /// <param name="reward"> Награда на изменение </param>
     /// <returns> Изменённая награда </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
     /// <exception cref="ObjectNotUniqueException"></exception>
     Task<Reward> Update(Reward reward);
@@ -62,15 +60,13 @@ public interface IRewardService
     /// </summary>
     /// <param name="id"> Id награды </param>
     /// <returns> Награда </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task<Reward> GottenReward(int id);
+    Task<Reward> GottenReward(Guid id);
 
     /// <summary>
     /// Удаление награды
     /// </summary>
     /// <param name="id"> Id награды </param>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task Delete(int id);
+    Task Delete(Guid id);
 }

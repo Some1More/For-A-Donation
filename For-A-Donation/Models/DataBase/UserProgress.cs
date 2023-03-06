@@ -7,7 +7,7 @@ namespace For_A_Donation.Models.DataBase;
 /// </summary>
 public class UserProgress : BaseEntity
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public User User { get; set; }
 

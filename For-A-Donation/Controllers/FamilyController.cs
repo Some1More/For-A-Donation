@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using For_A_Donation.Exceptions;
+using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels;
 using For_A_Donation.Services.Interfaces;
@@ -23,8 +24,9 @@ public class FamilyController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public ActionResult< FamilyViewModelResponse > GetById(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< FamilyViewModelResponse > GetById(Guid id)
     {
         try
         {
@@ -37,15 +39,12 @@ public class FamilyController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpPost]
-    [Route("{userId:int}")]
-    public async Task<ActionResult< FamilyViewModelResponse >> Create(int userId, FamilyViewModelRequest model)
+    [Route("{userId:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult< FamilyViewModelResponse >> Create(Guid userId, FamilyViewModelRequest model)
     {
         try
         {
@@ -58,7 +57,7 @@ public class FamilyController : ControllerBase
 
             var result = _mapper.Map<FamilyViewModelResponse>(res);
 
-            return Created(new Uri(""), result);
+            return Created(new Uri($"https://localhost:7006/api/Family/GetById/{result.Id}"), result);
         }
         catch (NotFoundException ex)
         {
@@ -68,10 +67,6 @@ public class FamilyController : ControllerBase
         {
             return Conflict(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
         catch (ForbiddenExeption ex)
         {
             return Forbid(ex.Message);
@@ -79,8 +74,9 @@ public class FamilyController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{userId:int},{familyId:int}")]
-    public async Task<ActionResult< FamilyViewModelResponse >> AddMember(int userId, int familyId)
+    [Route("{userId:Guid},{familyId:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult< FamilyViewModelResponse >> AddMember(Guid userId, Guid familyId)
     {
         try
         {
@@ -101,10 +97,6 @@ public class FamilyController : ControllerBase
         {
             return Conflict(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
         catch (ForbiddenExeption ex)
         {
             return Forbid(ex.Message);
@@ -113,8 +105,9 @@ public class FamilyController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<ActionResult> Delete(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult> Delete(Guid id)
     {
         try
         {
@@ -124,10 +117,6 @@ public class FamilyController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

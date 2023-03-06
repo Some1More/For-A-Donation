@@ -17,11 +17,14 @@ public class UserViewModelRequest
     [Required(ErrorMessage = "Password is required")]
     public string? Password { get; set; }
 
+
+    [Range(0, 1, ErrorMessage = "Value is out of range")]
     public Gender Gender { get; set; }
 
+
+    [Range(0, 5, ErrorMessage = "Value is out of range")]
     public Role Role { get; set; }
 
 
-    [Range(1, int.MaxValue, ErrorMessage = "Value is out of range")]
-    public int? FamilyId { get; set; }
+    public Guid? FamilyId { get; set; }
 }

@@ -8,13 +8,9 @@ public class Task : BaseEntity
 
     public string? Description { get; set; }
 
-    public int ExecutorId { get; set; }
+    public Guid ExecutorId { get; set; }
 
-    public User Executor { get; set; }
-
-    public int CustomerId { get; set; }
-
-    public User Customer { get; set; }
+    public Guid CustomerId { get; set; }
 
     public int Points { get; set; }
 

@@ -15,19 +15,14 @@ public class UserProgressService : IUserProgressService
         _db = db;
     }
 
-    public List<UserProgress> GetByUserId(int userId)
+    public List<UserProgress> GetByUserId(Guid userId)
     {
-        if (userId <= 0)
-        {
-            throw new ArgumentException("userId <= 0", nameof(userId));
-        }
-
         var res = _db.UserProgress.AsNoTracking().Where(x => x.UserId == userId).ToList();
 
         return res;
     }
 
-    public async Task<List<UserProgress>> Create(int userId)
+    public async Task<List<UserProgress>> Create(Guid userId)
     {
         List<UserProgress> userProgress = new();
 

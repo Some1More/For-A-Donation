@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using For_A_Donation.Exceptions;
-using For_A_Donation.Models.DataBase;
+using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
 
 namespace For_A_Donation.Controllers;
 
@@ -25,6 +24,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<TaskViewModelResponse> > GetAll()
     {
         var res = _taskService.GetAll();
@@ -34,8 +34,9 @@ public class TaskController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public ActionResult< TaskViewModelResponse > GetById(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< TaskViewModelResponse > GetById(Guid id)
     {
         try
         {
@@ -48,14 +49,11 @@ public class TaskController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpGet]
     [Route("{name}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< TaskViewModelResponse > GetByName(string name)
     {
         try
@@ -98,6 +96,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< TaskViewModelResponse >> Create(TaskViewModelRequest model)
     {
         try
@@ -106,7 +105,7 @@ public class TaskController : ControllerBase
             var res = await _taskService.Create(task);
             var result = _mapper.Map<TaskViewModelResponse>(res);
 
-            return Created(new Uri(""), result);
+            return Created(new Uri($"https://localhost:7006/api/Task/GetById/{result.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
         {
@@ -115,8 +114,9 @@ public class TaskController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{id:int}")]
-    public async Task<ActionResult< TaskViewModelResponse >> Update(int id, TaskViewModelRequest model)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult< TaskViewModelResponse >> Update(Guid id, TaskViewModelRequest model)
     {
         try
         {
@@ -136,15 +136,12 @@ public class TaskController : ControllerBase
         {
             return Conflict(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpPut]
-    [Route("{id:int},{userId:int}")]
-    public async Task<ActionResult> FinishedTask(int id, int userId)
+    [Route("{id:Guid},{userId:Guid}")]
+    [Authorize(new string[] { "Son", "Daughter" })]
+    public async Task<ActionResult> FinishedTask(Guid id, Guid userId)
     {
         try
         {
@@ -163,15 +160,12 @@ public class TaskController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
@@ -181,10 +175,6 @@ public class TaskController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

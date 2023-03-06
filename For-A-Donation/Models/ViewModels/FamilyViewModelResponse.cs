@@ -2,7 +2,7 @@
 
 public class FamilyViewModelResponse
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public List<UserListViewModelResponse> Members { get; set; } = new();
 }

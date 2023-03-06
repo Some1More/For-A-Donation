@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using For_A_Donation.Exceptions;
+using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels;
 using For_A_Donation.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Task = System.Threading.Tasks.Task;
 
 namespace For_A_Donation.Controllers;
 
@@ -28,6 +27,7 @@ public class RewardController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<RewardListViewModelResponse> > GetAll()
     {
         var res = _rewardService.GetAll();
@@ -37,8 +37,9 @@ public class RewardController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public ActionResult< RewardViewModelResponse > GetById(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< RewardViewModelResponse > GetById(Guid id)
     {
         try
         {
@@ -51,14 +52,11 @@ public class RewardController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpGet]
     [Route("{name}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< RewardViewModelResponse > GetByName(string name)
     {
         try
@@ -80,6 +78,7 @@ public class RewardController : ControllerBase
 
     [HttpGet]
     [Route("{categoryNumber:int}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<RewardListViewModelResponse> > GetByCategory(int categoryNumber)
     {
         try
@@ -101,6 +100,7 @@ public class RewardController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< RewardViewModelResponse >> Create(RewardViewModelRequest model)
     {
         try
@@ -109,7 +109,7 @@ public class RewardController : ControllerBase
             var res = await _rewardService.Create(reward);
             var result = _mapper.Map<RewardViewModelResponse>(res);
 
-            return Created(new Uri(""), result);
+            return Created(new Uri($"https://localhost:7006/api/Reward/GetById/{result.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
         {
@@ -118,8 +118,9 @@ public class RewardController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{id:int}")]
-    public async Task<ActionResult< RewardViewModelResponse >> Update(int id, RewardViewModelRequest model)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult< RewardViewModelResponse >> Update(Guid id, RewardViewModelRequest model)
     {
         try
         {
@@ -139,15 +140,12 @@ public class RewardController : ControllerBase
         {
             return Conflict(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpPut]
-    [Route("{id:int},{userId:int}")]
-    public async Task<ActionResult> GottenReward(int id, int userId)
+    [Route("{id:Guid},{userId:Guid}")]
+    [Authorize(new string[] { "Son", "Daughter" })]
+    public async Task<ActionResult> GottenReward(Guid id, Guid userId)
     {
         try
         {
@@ -169,15 +167,12 @@ public class RewardController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<ActionResult> Delete(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult> Delete(Guid id)
     {
         try
         {
@@ -187,10 +182,6 @@ public class RewardController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

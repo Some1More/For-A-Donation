@@ -16,9 +16,9 @@ public class User : BaseEntity
 
     public List<UserProgress> Progress { get; set; } = new();
 
-    public int FamilyId { get; set; }
+    public Guid? FamilyId { get; set; } = null;
 
-    public Family Family { get; set; }
+    public Family? Family { get; set; }
 
     public List<Task> CreatedTasks { get; set; } = new();
 

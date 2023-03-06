@@ -10,6 +10,7 @@ public class RewardViewModelRequest
 
     public string? Description { get; set; }
 
+    [Range(0, 4, ErrorMessage = "Value is out of range")]
     public CategoryOfReward CategoryOfReward { get; set; }
 
     public List<ProgressViewModel> Progress { get; set; } = new();

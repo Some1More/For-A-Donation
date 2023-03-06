@@ -11,8 +11,7 @@ public interface IProgressService
     /// </summary>
     /// <param name="rewardId"> Id награды </param>
     /// <returns> Необходимый прогресс по награде </returns>
-    /// <exception cref="ArgumentException"></exception>
-    List<Progress> GetByRewardId(int rewardId);
+    List<Progress> GetByRewardId(Guid rewardId);
 
     /// <summary>
     /// Создание списка прогресса по награде
@@ -32,7 +31,6 @@ public interface IProgressService
     /// Удаление прогресса одной категории по награде
     /// </summary>
     /// <param name="id"> Id прогресса одной категории </param>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task Delete(int id);
+    Task Delete(Guid id);
 }

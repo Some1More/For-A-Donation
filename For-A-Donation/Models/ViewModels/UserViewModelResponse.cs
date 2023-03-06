@@ -4,7 +4,7 @@ namespace For_A_Donation.Models.ViewModels;
 
 public class UserViewModelResponse
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public string Name { get; set; }
 
@@ -16,5 +16,5 @@ public class UserViewModelResponse
 
     public List<UserProgressViewModelResponce> Progress { get; set; } = new();
 
-    public int FamilyId { get; set; }
+    public Guid? FamilyId { get; set; }
 }

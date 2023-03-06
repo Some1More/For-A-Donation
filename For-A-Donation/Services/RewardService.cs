@@ -21,13 +21,8 @@ public class RewardService : IRewardService
         return _db.Rewards.AsNoTracking().ToList();
     }
 
-    public Reward GetById(int id)
+    public Reward GetById(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Rewards.Include(x => x.Progress).AsNoTracking().SingleOrDefault(x => x.Id == id);
 
         if (res == null)
@@ -77,11 +72,6 @@ public class RewardService : IRewardService
 
     public async Task<Reward> Update(Reward reward)
     {
-        if (reward.Id <= 0)
-        {
-            throw new ArgumentException("reward Id <= 0", nameof(reward));
-        }
-
         if (_db.Rewards.AsNoTracking().SingleOrDefault(x => x.Id == reward.Id) == null)
         {
             throw new NotFoundException(nameof(reward), "Reward with this id was not founded");
@@ -98,13 +88,8 @@ public class RewardService : IRewardService
         return reward;
     }
 
-    public async Task<Reward> GottenReward(int id)
+    public async Task<Reward> GottenReward(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("Id <= 0", nameof(id));
-        }
-
         var reward = _db.Rewards.Find(id);
 
         if (reward == null)
@@ -120,13 +105,8 @@ public class RewardService : IRewardService
         return reward;
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Rewards.SingleOrDefault(x => x.Id == id);
 
         if (res == null)

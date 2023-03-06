@@ -17,17 +17,16 @@ public interface ITaskServicecs
     /// </summary>
     /// <param name="id"> Id задачи </param>
     /// <returns> Задача </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task GetById(int id);
+    Task GetById(Guid id);
 
     /// <summary>
     /// Получение задачи по названиию
     /// </summary>
     /// <param name="name"> Название задачи </param>
     /// <returns> Задача </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     Task GetByName(string name);
 
     /// <summary>
@@ -50,7 +49,6 @@ public interface ITaskServicecs
     /// </summary>
     /// <param name="task"> Задача на изменение </param>
     /// <returns> Изменённая задача </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
     /// <exception cref="ObjectNotUniqueException"></exception>
     Task<Task> Update(Task task);
@@ -60,15 +58,13 @@ public interface ITaskServicecs
     /// </summary>
     /// <param name="id"> Id задачи </param>
     /// <returns> Завершённая задача </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task<Task> FinishedTask(int id);
+    Task<Task> FinishedTask(Guid id);
 
     /// <summary>
     /// Удаление задач
     /// </summary>
     /// <param name="id"> Id задачи </param>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    System.Threading.Tasks.Task Delete(int id);
+    System.Threading.Tasks.Task Delete(Guid id);
 }
