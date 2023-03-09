@@ -2,7 +2,7 @@
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.Enums;
-using For_A_Donation.Models.ViewModels;
+using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,28 +52,6 @@ public class TaskController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{name}")]
-    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
-    public ActionResult< TaskViewModelResponse > GetByName(string name)
-    {
-        try
-        {
-            var res = _taskService.GetByName(name);
-            var result = _mapper.Map<TaskViewModelResponse>(res);
-
-            return Ok(result);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet]
     [Route("{numberCategory:int}")]
     public ActionResult<List< TaskViewModelResponse >> GetByCategory(int numberCategory)
     {
@@ -99,18 +77,11 @@ public class TaskController : ControllerBase
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< TaskViewModelResponse >> Create(TaskViewModelRequest model)
     {
-        try
-        {
-            var task = _mapper.Map<Models.DataBase.Task>(model);
-            var res = await _taskService.Create(task);
-            var result = _mapper.Map<TaskViewModelResponse>(res);
+        var task = _mapper.Map<Models.DataBase.Task>(model);
+        var res = await _taskService.Create(task);
+        var result = _mapper.Map<TaskViewModelResponse>(res);
 
-            return Created(new Uri($"https://localhost:7006/api/Task/GetById/{result.Id}"), result);
-        }
-        catch (ObjectNotUniqueException ex)
-        {
-            return Conflict(ex.Message);
-        }
+        return Created(new Uri($"https://localhost:7006/api/Task/GetById/{result.Id}"), result);
     }
 
     [HttpPut]
@@ -131,10 +102,6 @@ public class TaskController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
-        }
-        catch (ObjectNotUniqueException ex)
-        {
-            return Conflict(ex.Message);
         }
     }
 

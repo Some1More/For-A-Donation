@@ -1,6 +1,6 @@
 ﻿using For_A_Donation.Models.Enums;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.User;
 
 public class UserViewModelResponse
 {
@@ -14,7 +14,7 @@ public class UserViewModelResponse
 
     public Role Role { get; set; }
 
-    public List<UserProgressViewModelResponce> Progress { get; set; } = new();
-
     public Guid? FamilyId { get; set; }
+
+    public List<UserProgressViewModelResponce>? Progress { get; set; } = new();
 }

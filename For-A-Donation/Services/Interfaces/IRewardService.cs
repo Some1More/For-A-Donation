@@ -20,15 +20,6 @@ public interface IRewardService
     /// <returns> Награда </returns>
     /// <exception cref="NotFoundException"></exception>
     Reward GetById(Guid id);
-
-    /// <summary>
-    /// Получение награды по имени
-    /// </summary>
-    /// <param name="name"> Имя награды </param>
-    /// <returns> Награда </returns>
-    /// <exception cref="NotFoundException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    Reward GetByName(string name);
     
     /// <summary>
     /// Получение наград определённой категории
@@ -42,7 +33,6 @@ public interface IRewardService
     /// </summary>
     /// <param name="reward"> Награда на создание </param>
     /// <returns> Созданная награда </returns>
-    /// <exception cref="ObjectNotUniqueException"></exception>
     Task<Reward> Create(Reward reward);
 
 
@@ -52,7 +42,6 @@ public interface IRewardService
     /// <param name="reward"> Награда на изменение </param>
     /// <returns> Изменённая награда </returns>
     /// <exception cref="NotFoundException"></exception>
-    /// <exception cref="ObjectNotUniqueException"></exception>
     Task<Reward> Update(Reward reward);
 
     /// <summary>

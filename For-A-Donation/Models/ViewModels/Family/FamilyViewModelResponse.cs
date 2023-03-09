@@ -1,4 +1,6 @@
-﻿namespace For_A_Donation.Models.ViewModels;
+﻿using For_A_Donation.Models.ViewModels.User;
+
+namespace For_A_Donation.Models.ViewModels.Family;
 
 public class FamilyViewModelResponse
 {

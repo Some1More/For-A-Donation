@@ -3,7 +3,8 @@ using AutoMapper;
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.ViewModels;
+using For_A_Donation.Models.Enums;
+using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,13 +16,16 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IUserProgressService _userProgressService;
+    private readonly IFamilyService _familyService;
     private readonly IMapper _mapper;
 
-    public UserController(IUserService userService, IUserProgressService userProgressService, IMapper mapper)
+    public UserController(IUserService userService, IUserProgressService userProgressService,
+                            IMapper mapper, IFamilyService familyService)
     {
         _userService = userService;
         _userProgressService = userProgressService;
         _mapper = mapper;
+        _familyService = familyService;
     }
 
     [HttpGet]
@@ -49,21 +53,43 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult< UserViewModelResponse >> Registration(UserViewModelRegistration model)
     {
+        Family family = new();
+
         try
         {
             var user = _mapper.Map<User>(model);
 
+            if (string.IsNullOrEmpty(user.FamilyId.ToString()))
+            {
+                family = await _familyService.Create(new Family());
+                user.FamilyId = family.Id;
+            }
+            
             var res = await _userService.Registration(user);
-            var progress = await _userProgressService.Create(res.Id);
-            res.Progress = progress;
+            res.Progress = null;
+
+            if (res.Role == Role.Son || res.Role == Role.Daughter)
+            {
+                var progress = await _userProgressService.Create(res.Id);
+                res.Progress = progress;
+            }
 
             var result = _mapper.Map<UserViewModelResponse>(res);
 
-            return Created(new Uri($"http://localhost:5165/User/GetById/{result.Id}"), result);
+            return Created(new Uri($"https://localhost:5165/User/GetById/{result.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
         {
+            if (family.Id != new Guid())
+            {
+                await _familyService.Delete(family.Id);
+            }
+            
             return Conflict(ex.Message);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
         }
     }
 

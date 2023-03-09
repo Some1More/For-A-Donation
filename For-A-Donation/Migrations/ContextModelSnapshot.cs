@@ -50,6 +50,30 @@ namespace For_A_Donation.Migrations
                     b.ToTable("Progress");
                 });
 
+            modelBuilder.Entity("For_A_Donation.Models.DataBase.Purpose", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsFinished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("RewardId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RewardId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Purposes");
+                });
+
             modelBuilder.Entity("For_A_Donation.Models.DataBase.Reward", b =>
                 {
                     b.Property<Guid>("Id")
@@ -105,17 +129,7 @@ namespace For_A_Donation.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("UserId1")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Tasks");
                 });
@@ -176,6 +190,32 @@ namespace For_A_Donation.Migrations
                     b.ToTable("UserProgress");
                 });
 
+            modelBuilder.Entity("For_A_Donation.Models.DataBase.Wish", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Wishes");
+                });
+
             modelBuilder.Entity("For_A_Donation.Models.DataBase.Progress", b =>
                 {
                     b.HasOne("For_A_Donation.Models.DataBase.Reward", "Reward")
@@ -187,15 +227,23 @@ namespace For_A_Donation.Migrations
                     b.Navigation("Reward");
                 });
 
-            modelBuilder.Entity("For_A_Donation.Models.DataBase.Task", b =>
+            modelBuilder.Entity("For_A_Donation.Models.DataBase.Purpose", b =>
                 {
-                    b.HasOne("For_A_Donation.Models.DataBase.User", null)
-                        .WithMany("CompleteTasks")
-                        .HasForeignKey("UserId");
+                    b.HasOne("For_A_Donation.Models.DataBase.Reward", "Reward")
+                        .WithMany()
+                        .HasForeignKey("RewardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("For_A_Donation.Models.DataBase.User", null)
-                        .WithMany("CreatedTasks")
-                        .HasForeignKey("UserId1");
+                    b.HasOne("For_A_Donation.Models.DataBase.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reward");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("For_A_Donation.Models.DataBase.User", b =>
@@ -218,6 +266,17 @@ namespace For_A_Donation.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("For_A_Donation.Models.DataBase.Wish", b =>
+                {
+                    b.HasOne("For_A_Donation.Models.DataBase.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("For_A_Donation.Models.DataBase.Family", b =>
                 {
                     b.Navigation("Members");
@@ -230,10 +289,6 @@ namespace For_A_Donation.Migrations
 
             modelBuilder.Entity("For_A_Donation.Models.DataBase.User", b =>
                 {
-                    b.Navigation("CompleteTasks");
-
-                    b.Navigation("CreatedTasks");
-
                     b.Navigation("Progress");
                 });
 #pragma warning restore 612, 618

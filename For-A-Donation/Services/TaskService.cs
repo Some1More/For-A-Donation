@@ -57,13 +57,6 @@ public class TaskService : ITaskServicecs
 
     public async Task<Task> Create(Task task)
     {
-        var res = _db.Tasks.AsNoTracking().SingleOrDefault(x => x.Name == task.Name);
-
-        if (res != null)
-        {
-            throw new ObjectNotUniqueException(nameof(task), "Task with this name already exsits");
-        }
-
         await _db.Tasks.AddAsync(task);
         await _db.SaveChangesAsync();
 
@@ -75,11 +68,6 @@ public class TaskService : ITaskServicecs
         if (_db.Tasks.AsNoTracking().SingleOrDefault(x => x.Id == task.Id) == null)
         {
             throw new NotFoundException(nameof(task), "Task with this id was not founded");
-        }
-
-        if (_db.Tasks.AsNoTracking().SingleOrDefault(x => x.Name == task.Name) != null)
-        {
-            throw new ObjectNotUniqueException(nameof(task), "Task with this name already exists");
         }
 
         _db.Tasks.Update(task);

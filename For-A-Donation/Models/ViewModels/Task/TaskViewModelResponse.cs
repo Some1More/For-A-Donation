@@ -1,6 +1,6 @@
 ﻿using For_A_Donation.Models.Enums;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.Task;
 
 public class TaskViewModelResponse
 {

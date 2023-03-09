@@ -1,7 +1,7 @@
 ﻿using For_A_Donation.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.Task;
 
 public class TaskViewModelRequest
 {

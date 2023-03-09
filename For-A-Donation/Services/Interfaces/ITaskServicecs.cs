@@ -21,15 +21,6 @@ public interface ITaskServicecs
     Task GetById(Guid id);
 
     /// <summary>
-    /// Получение задачи по названиию
-    /// </summary>
-    /// <param name="name"> Название задачи </param>
-    /// <returns> Задача </returns>
-    /// <exception cref="NotFoundException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    Task GetByName(string name);
-
-    /// <summary>
     /// Получение списка задач по категории
     /// </summary>
     /// <param name="category"> Категория задач </param>
@@ -41,7 +32,6 @@ public interface ITaskServicecs
     /// </summary>
     /// <param name="task"> Новая задача </param>
     /// <returns> Созданная задача </returns>
-    /// <exception cref="ObjectNotUniqueException"></exception>
     Task<Task> Create(Task task);
 
     /// <summary>
@@ -50,7 +40,6 @@ public interface ITaskServicecs
     /// <param name="task"> Задача на изменение </param>
     /// <returns> Изменённая задача </returns>
     /// <exception cref="NotFoundException"></exception>
-    /// <exception cref="ObjectNotUniqueException"></exception>
     Task<Task> Update(Task task);
 
     /// <summary>

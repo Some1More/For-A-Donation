@@ -38,15 +38,34 @@ namespace For_A_Donation.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tasks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    ExecutorId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Points = table.Column<int>(type: "INTEGER", nullable: false),
+                    CategoryOfTask = table.Column<int>(type: "INTEGER", nullable: false),
+                    DateTimeFinish = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsFinished = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Gender = table.Column<int>(type: "INTEGER", nullable: false),
                     PhoneNumber = table.Column<string>(type: "TEXT", nullable: false),
                     Password = table.Column<string>(type: "TEXT", nullable: false),
                     Role = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Gender = table.Column<int>(type: "INTEGER", nullable: false),
                     FamilyId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -80,34 +99,29 @@ namespace For_A_Donation.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "Purposes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    ExecutorId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Points = table.Column<int>(type: "INTEGER", nullable: false),
-                    CategoryOfTask = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateTimeFinish = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsFinished = table.Column<bool>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    UserId1 = table.Column<Guid>(type: "TEXT", nullable: true)
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    RewardId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    IsFinished = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.PrimaryKey("PK_Purposes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_Users_UserId",
+                        name: "FK_Purposes_Rewards_RewardId",
+                        column: x => x.RewardId,
+                        principalTable: "Rewards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Purposes_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,20 +144,41 @@ namespace For_A_Donation.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Wishes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wishes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Wishes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Progress_RewardId",
                 table: "Progress",
                 column: "RewardId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_UserId",
-                table: "Tasks",
-                column: "UserId");
+                name: "IX_Purposes_RewardId",
+                table: "Purposes",
+                column: "RewardId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_UserId1",
-                table: "Tasks",
-                column: "UserId1");
+                name: "IX_Purposes_UserId",
+                table: "Purposes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProgress_UserId",
@@ -154,6 +189,11 @@ namespace For_A_Donation.Migrations
                 name: "IX_Users_FamilyId",
                 table: "Users",
                 column: "FamilyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Wishes_UserId",
+                table: "Wishes",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -163,10 +203,16 @@ namespace For_A_Donation.Migrations
                 name: "Progress");
 
             migrationBuilder.DropTable(
+                name: "Purposes");
+
+            migrationBuilder.DropTable(
                 name: "Tasks");
 
             migrationBuilder.DropTable(
                 name: "UserProgress");
+
+            migrationBuilder.DropTable(
+                name: "Wishes");
 
             migrationBuilder.DropTable(
                 name: "Rewards");

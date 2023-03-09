@@ -1,9 +1,9 @@
 ﻿using For_A_Donation.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.User;
 
-public class UserViewModelRequest
+public class UserViewModelRegistration
 {
     [Required(ErrorMessage = "Name is required")]
     public string? Name { get; set; }
@@ -16,6 +16,11 @@ public class UserViewModelRequest
 
     [Required(ErrorMessage = "Password is required")]
     public string? Password { get; set; }
+
+
+    [Required(ErrorMessage = "PasswordConfirm is required")]
+    [Compare("Password", ErrorMessage = "Password mismatch")]
+    public string? PasswordConfirm { get; set; }
 
 
     [Range(0, 1, ErrorMessage = "Value is out of range")]

@@ -2,7 +2,7 @@
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.ViewModels;
+using For_A_Donation.Models.ViewModels.Family;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

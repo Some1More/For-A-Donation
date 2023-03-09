@@ -57,13 +57,6 @@ public class RewardService : IRewardService
 
     public async Task<Reward> Create(Reward reward)
     {
-        var res = _db.Rewards.AsNoTracking().SingleOrDefault(x => x.Name == reward.Name);
-
-        if (res != null)
-        {
-            throw new ObjectNotUniqueException(nameof(reward), "Reward with this name already exsits");
-        }
-
         await _db.Rewards.AddAsync(reward);
         await _db.SaveChangesAsync();
 
@@ -75,11 +68,6 @@ public class RewardService : IRewardService
         if (_db.Rewards.AsNoTracking().SingleOrDefault(x => x.Id == reward.Id) == null)
         {
             throw new NotFoundException(nameof(reward), "Reward with this id was not founded");
-        }
-
-        if (_db.Rewards.AsNoTracking().SingleOrDefault(x => x.Name == reward.Name) != null)
-        {
-            throw new ObjectNotUniqueException(nameof(reward), "Reward with this name already exists");
         }
 
         _db.Rewards.Update(reward);

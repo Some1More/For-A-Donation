@@ -3,7 +3,7 @@ using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
-using For_A_Donation.Models.ViewModels;
+using For_A_Donation.Models.ViewModels.Reward;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,28 +55,6 @@ public class RewardController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{name}")]
-    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
-    public ActionResult< RewardViewModelResponse > GetByName(string name)
-    {
-        try
-        {
-            var res = _rewardService.GetByName(name);
-            var result = _mapper.Map<RewardViewModelResponse>(res);
-
-            return Ok(result);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpGet]
     [Route("{categoryNumber:int}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<RewardListViewModelResponse> > GetByCategory(int categoryNumber)
@@ -103,18 +81,11 @@ public class RewardController : ControllerBase
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< RewardViewModelResponse >> Create(RewardViewModelRequest model)
     {
-        try
-        {
-            var reward = _mapper.Map<Reward>(model);
-            var res = await _rewardService.Create(reward);
-            var result = _mapper.Map<RewardViewModelResponse>(res);
+        var reward = _mapper.Map<Reward>(model);
+        var res = await _rewardService.Create(reward);
+        var result = _mapper.Map<RewardViewModelResponse>(res);
 
-            return Created(new Uri($"https://localhost:7006/api/Reward/GetById/{result.Id}"), result);
-        }
-        catch (ObjectNotUniqueException ex)
-        {
-            return Conflict(ex.Message);
-        }
+        return Created(new Uri($"https://localhost:7006/api/Reward/GetById/{result.Id}"), result);
     }
 
     [HttpPut]
@@ -135,10 +106,6 @@ public class RewardController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
-        }
-        catch (ObjectNotUniqueException ex)
-        {
-            return Conflict(ex.Message);
         }
     }
 

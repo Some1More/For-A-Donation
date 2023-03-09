@@ -23,4 +23,8 @@ public class Context : DbContext
     public DbSet<Task> Tasks { get; set; }
 
     public DbSet<User> Users { get; set; }
+
+    public DbSet<Purpose> Purposes { get; set; }
+
+    public DbSet<Wish> Wishes { get; set; }
 }

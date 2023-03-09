@@ -1,4 +1,6 @@
-﻿namespace For_A_Donation.Models.DataBase;
+﻿using For_A_Donation.Models.DataBase.Abstract;
+
+namespace For_A_Donation.Models.DataBase;
 
 public class Family : BaseEntity
 {
