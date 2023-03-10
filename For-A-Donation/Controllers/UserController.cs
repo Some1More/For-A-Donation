@@ -87,10 +87,6 @@ public class UserController : ControllerBase
             
             return Conflict(ex.Message);
         }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
     }
 
     [HttpPut]

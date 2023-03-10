@@ -20,7 +20,15 @@ public interface IRewardService
     /// <returns> Награда </returns>
     /// <exception cref="NotFoundException"></exception>
     Reward GetById(Guid id);
-    
+
+    /// <summary>
+    /// Получение списка наград по части от имени
+    /// </summary>
+    /// <param name="name"> Часть от имени </param>
+    /// <returns> Список наград по части от имени </returns>
+    /// <exception cref="ArgumentException"> Name is null or empty </exception>
+    List<Reward> GetByName(string name);
+
     /// <summary>
     /// Получение наград определённой категории
     /// </summary>

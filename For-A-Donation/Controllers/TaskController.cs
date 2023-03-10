@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
-using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -51,26 +50,31 @@ public class TaskController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [Route("{numberCategory:int}")]
-    public ActionResult<List< TaskViewModelResponse >> GetByCategory(int numberCategory)
+    [HttpGet("{name}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< List<TaskViewModelResponse> > GetByName(string name)
     {
         try
         {
-            var category = (CategoryOfTask)Enum.ToObject(typeof(CategoryOfTask), numberCategory);
-            var res = _taskService.GetByCategory(category);
+            var res = _taskService.GetByName(name);
             var result = _mapper.Map<List<TaskViewModelResponse>>(res);
 
             return Ok(result);
         }
-        catch (ArgumentNullException ex)
+        catch(ArgumentException ex)
         {
             return BadRequest(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+    }
+
+    [HttpPost]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< List<TaskViewModelResponse>> GetByFilter(TaskFilterViewModel model)
+    {
+        var res = _taskService.GetByFilter(model);
+        var result = _mapper.Map<List<TaskViewModelResponse>>(res);
+
+        return Ok(result);
     }
 
     [HttpPost]

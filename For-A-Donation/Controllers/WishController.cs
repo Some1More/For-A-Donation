@@ -53,24 +53,13 @@ public class WishController : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpPost]
     public ActionResult<List<WishViewModelResponse>> GetByFilter(WithFilterViewModel model)
-    {
-        try
-        {   
-            var res = _wishService.GetByFilter(model.Category, model.UserId);
-            var result = _mapper.Map<List<WishViewModelResponse>>(res);
+    { 
+        var res = _wishService.GetByFilter(model);
+        var result = _mapper.Map<List<WishViewModelResponse>>(res);
 
-            return Ok(result);
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return Ok(result);
     }
 
     [HttpPost]

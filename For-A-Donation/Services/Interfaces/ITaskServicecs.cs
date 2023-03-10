@@ -1,6 +1,7 @@
 ﻿using For_A_Donation.Models.Enums;
 using Task = For_A_Donation.Models.DataBase.Task;
 using For_A_Donation.Exceptions;
+using For_A_Donation.Models.ViewModels.Task;
 
 namespace For_A_Donation.Services.Interfaces;
 
@@ -21,11 +22,19 @@ public interface ITaskServicecs
     Task GetById(Guid id);
 
     /// <summary>
-    /// Получение списка задач по категории
+    /// Получение списка задач по части от имени
     /// </summary>
-    /// <param name="category"> Категория задач </param>
-    /// <returns> Список задач определённой категории </returns>
-    List<Task> GetByCategory(CategoryOfTask category);
+    /// <param name="name"> Часть от имени </param>
+    /// <returns> Список задач по части от имени </returns>
+    /// <exception cref="ArgumentException"> Name is null or empty </exception>
+    List<Task> GetByName(string name);
+
+    /// <summary>
+    /// Получение отфильтрованного списка задач
+    /// </summary>
+    /// <param name="model"> Фильтр </param>
+    /// <returns> Отфильтрованный список задач </returns>
+    List<Task> GetByFilter(TaskFilterViewModel model);
 
     /// <summary>
     /// Созданиие новой задачи

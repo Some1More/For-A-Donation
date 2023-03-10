@@ -1,6 +1,7 @@
 ﻿using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
+using For_A_Donation.Models.ViewModels.Wish;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
@@ -21,21 +22,21 @@ public class WishService : IWishService
         return _db.Wishes.AsNoTracking().ToList();
     }
 
-    public List<Wish> GetByFilter(CategoryOfReward? category, Guid? userId)
+    public List<Wish> GetByFilter(WithFilterViewModel model)
     {
-        var wishes = _db.Wishes.AsNoTracking().ToList();
+        var wishes = _db.Wishes.AsNoTracking();
 
-        if (category != null)
+        if (model.Category != null)
         {
-            wishes = wishes.Where(x => x.Category == category).ToList();
+            wishes = wishes.Where(x => x.Category == model.Category);
         }
 
-        if (userId != null)
+        if (model.UserId != null)
         {
-            wishes = wishes.Where(x => x.UserId == userId).ToList();
+            wishes = wishes.Where(x => x.UserId == model.UserId);
         }
 
-        return wishes;
+        return wishes.ToList();
     }
 
     public Wish GetById(Guid id)

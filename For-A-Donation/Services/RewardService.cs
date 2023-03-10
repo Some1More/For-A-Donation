@@ -33,21 +33,14 @@ public class RewardService : IRewardService
         return res;
     }
 
-    public Reward GetByName(string name)
+    public List<Reward> GetByName(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
             throw new ArgumentException("Name is null or empty", nameof(name));
         }
 
-        var res = _db.Rewards.Include(x => x.Progress).AsNoTracking().SingleOrDefault(x => x.Name == name);
-
-        if (res == null)
-        {
-            throw new NotFoundException(nameof(Reward), "Reward with this name was not founded");
-        }
-
-        return res;
+        return _db.Rewards.Include(x => x.Progress).AsNoTracking().Where(x => x.Name.Contains(name)).ToList();
     }
 
     public List<Reward> GetByCategory(CategoryOfReward category)

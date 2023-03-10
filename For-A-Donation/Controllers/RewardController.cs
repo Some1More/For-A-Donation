@@ -54,6 +54,23 @@ public class RewardController : ControllerBase
         }
     }
 
+    [HttpGet("{name}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< List<RewardListViewModelResponse >> GetByName(string name)
+    {
+        try
+        {
+            var res = _rewardService.GetByName(name);
+            var result = _mapper.Map<RewardListViewModelResponse>(res);
+
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [HttpGet]
     [Route("{categoryNumber:int}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]

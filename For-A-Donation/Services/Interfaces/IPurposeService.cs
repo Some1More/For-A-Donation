@@ -15,14 +15,14 @@ public interface IPurposeService
     Purpose? GetByUserId(Guid userId);
 
     /// <summary>
-    /// Созданиие новой задачи
+    /// Созданиие новой цели
     /// </summary>
     /// <param name="purpose"> Новая цель </param>
     /// <returns> Созданная цель </returns>
     Task<Purpose> Create(Purpose purpose);
 
     /// <summary>
-    /// 
+    /// Удаление цели
     /// </summary>
     /// <param name="Id"> Id цели </param>
     /// <exception cref="NotFoundException"></exception>

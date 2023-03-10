@@ -2,6 +2,7 @@
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Exceptions;
 using Task = System.Threading.Tasks.Task;
+using For_A_Donation.Models.ViewModels.Wish;
 
 namespace For_A_Donation.Services.Interfaces;
 
@@ -23,11 +24,11 @@ public interface IWishService
     Wish GetById(Guid id);
 
     /// <summary>
-    /// Получение желаний по категории и по Id пользователя
+    /// Получение отфильтрованных желаний
     /// </summary>
-    /// <param name="category"> Категория желаний </param>
-    /// <returns> Список желаний определённой категории </returns>
-    List<Wish> GetByFilter(CategoryOfReward? category, Guid? userId);
+    /// <param name="model"> Фильтр </param>
+    /// <returns> Список отфильтрованных желаний </returns>
+    List<Wish> GetByFilter(WithFilterViewModel model);
 
     /// <summary>
     /// Созданиие нового желания
