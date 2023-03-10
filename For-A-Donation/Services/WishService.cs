@@ -1,8 +1,8 @@
 ﻿using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.Wish;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
@@ -10,9 +10,9 @@ namespace For_A_Donation.Services;
 
 public class WishService : IWishService
 {
-    private readonly Context _db;
+    private readonly IUnitOfWork _db;
 
-    public WishService(Context db)
+    public WishService(IUnitOfWork db)
     {
         _db = db;
     }
@@ -24,7 +24,7 @@ public class WishService : IWishService
 
     public List<Wish> GetByFilter(WithFilterViewModel model)
     {
-        var wishes = _db.Wishes.AsNoTracking();
+        var wishes = _db.Wish.GetAll();
 
         if (model.Category != null)
         {
@@ -46,7 +46,7 @@ public class WishService : IWishService
             throw new ArgumentException("Id is required", nameof(id));
         }
 
-        var res = _db.Wishes.AsNoTracking().SingleOrDefault(x => x.Id == id);
+        var res = _db.Wish.GetById(id);
 
         if (res == null)
         {
@@ -58,9 +58,7 @@ public class WishService : IWishService
 
     public async Task<Wish> Create(Wish wish)
     {
-        await _db.Wishes.AddAsync(wish);
-        await _db.SaveChangesAsync();
-
+        await _db.Wish.AddAsync(wish);
         return wish;
     }
 
@@ -71,15 +69,14 @@ public class WishService : IWishService
             throw new ArgumentException("Id is required", nameof(wish.Id));
         }
 
-        var res = _db.Wishes.AsNoTracking().SingleOrDefault(x => x.Id == wish.Id);
+        var res = _db.Wish.GetById(wish.Id);
 
         if (res == null)
         {
             throw new NotFoundException(nameof(wish.Id), "Wish with this Id was not founded");
         }
 
-        _db.Wishes.Update(wish);
-        await _db.SaveChangesAsync();
+        await _db.Wish.UpdateAsync(wish);
 
         return wish;
     }
@@ -91,14 +88,13 @@ public class WishService : IWishService
             throw new ArgumentException("Id is required", nameof(id));
         }
 
-        var res = _db.Wishes.AsNoTracking().SingleOrDefault(x => x.Id == id);
+        var res = _db.Wish.GetById(id);
 
         if (res == null)
         {
             throw new NotFoundException(nameof(id), "Wish with this Id was not founded");
         }
 
-        _db.Wishes.Remove(res);
-        await _db.SaveChangesAsync();
+        await _db.Wish.RemoveAsync(res);
     }
 }

@@ -3,6 +3,7 @@ using For_A_Donation.Services;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using For_A_Donation.Helpers;
+using For_A_Donation.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<ITaskServicecs, TaskService>();
 builder.Services.AddScoped<IUserProgressService, UserProgressService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

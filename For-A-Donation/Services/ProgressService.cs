@@ -1,23 +1,23 @@
 ﻿using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using For_A_Donation.UnitOfWork;
 using Task = System.Threading.Tasks.Task;
 
 namespace For_A_Donation.Services;
 
 public class ProgressService : IProgressService
 {
-    private readonly Context _db;
+    private readonly IUnitOfWork _db;
 
-    public ProgressService(Context db)
+    public ProgressService(IUnitOfWork db)
     {
         _db = db;
     }
 
     public List<Progress> GetByRewardId(Guid rewardId)
     {
-        return _db.Progress.AsNoTracking().Where(x => x.RewardId == rewardId).ToList();
+        return _db.Progress.GetAll().Where(x => x.RewardId == rewardId).ToList();
     }
 
     /*public async Task<List<Progress>> Create(List<Progress> progress)
@@ -38,14 +38,13 @@ public class ProgressService : IProgressService
 
     public async Task Delete(Guid id)
     {
-        var res = _db.Progress.SingleOrDefault(x => x.Id == id);
+        var res = _db.Progress.GetById(id);
 
         if (res == null)
         {
             throw new NotFoundException(nameof(Progress), "Progress with this id was not founded");
         }
 
-        _db.Progress.Remove(res);
-        await _db.SaveChangesAsync();
+        await _db.Progress.RemoveAsync(res);
     }
 }

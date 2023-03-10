@@ -3,6 +3,7 @@ using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Task = For_A_Donation.Models.DataBase.Task;
 
@@ -10,21 +11,21 @@ namespace For_A_Donation.Services;
 
 public class TaskService : ITaskServicecs
 {
-    private readonly Context _db;
+    private readonly IUnitOfWork _db;
 
-    public TaskService(Context db)
+    public TaskService(IUnitOfWork db)
     {
         _db = db;
     }
 
     public List<Task> GetAll()
     {
-        return _db.Tasks.AsNoTracking().ToList();
+        return _db.Task.GetAll().ToList();
     }
 
     public Task GetById(Guid id)
     {
-        var res = _db.Tasks.AsNoTracking().SingleOrDefault(x => x.Id == id);
+        var res = _db.Task.GetById(id);
 
         if (res == null)
         {
@@ -41,12 +42,12 @@ public class TaskService : ITaskServicecs
             throw new ArgumentException("Name is null or empty", nameof(name));
         }
 
-        return _db.Tasks.AsNoTracking().Where(x => x.Name.Contains(name)).ToList();
+        return _db.Task.GetAll().Where(x => x.Name.Contains(name)).ToList();
     }
 
     public List<Task> GetByFilter(TaskFilterViewModel model)
     {
-        var tasks = _db.Tasks.AsNoTracking();
+        var tasks = _db.Task.GetAll();
 
         if (model.ExecutorId != null)
         {
@@ -68,28 +69,25 @@ public class TaskService : ITaskServicecs
 
     public async Task<Task> Create(Task task)
     {
-        await _db.Tasks.AddAsync(task);
-        await _db.SaveChangesAsync();
-
+        await _db.Task.AddAsync(task);
         return task;
     }
 
     public async Task<Task> Update(Task task)
     {
-        if (_db.Tasks.AsNoTracking().SingleOrDefault(x => x.Id == task.Id) == null)
+        if (_db.Task.GetById(task.Id) == null)
         {
             throw new NotFoundException(nameof(task), "Task with this id was not founded");
         }
 
-        _db.Tasks.Update(task);
-        await _db.SaveChangesAsync();
+        await _db.Task.UpdateAsync(task);
 
         return task;
     }
 
     public async Task<Task> FinishedTask(Guid id)
     {
-        var task = _db.Tasks.Find(id);
+        var task = _db.Task.GetById(id);
 
         if (task == null)
         {
@@ -98,22 +96,20 @@ public class TaskService : ITaskServicecs
 
         task.IsFinished = true;
 
-        _db.Tasks.Update(task);
-        await _db.SaveChangesAsync();
+        await _db.Task.UpdateAsync(task);
 
         return task;
     }
 
     public async System.Threading.Tasks.Task Delete(Guid id)
     {
-        var res = _db.Tasks.SingleOrDefault(x => x.Id == id);
+        var res = _db.Task.GetById(id);
 
         if (res == null)
         {
             throw new NotFoundException(nameof(Task), "Task with this id was not founded");
         }
 
-        _db.Tasks.Remove(res);
-        await _db.SaveChangesAsync();
+        await _db.Task.RemoveAsync(res);
     }
 }

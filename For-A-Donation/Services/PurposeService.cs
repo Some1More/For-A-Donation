@@ -1,6 +1,7 @@
 ﻿using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
@@ -8,9 +9,9 @@ namespace For_A_Donation.Services;
 
 public class PurposeService : IPurposeService
 {
-    private readonly Context _db;
+    private readonly IUnitOfWork _db;
 
-    public PurposeService(Context db)
+    public PurposeService(IUnitOfWork db)
     {
         _db = db;
     }
@@ -22,22 +23,21 @@ public class PurposeService : IPurposeService
             throw new ArgumentException("Id is required", nameof(userId));
         }
 
-        var res = _db.Purposes.AsNoTracking().Include(x => x.Reward).SingleOrDefault(x => x.UserId == userId);
+        var res = _db.Purpose.Include(x => x.Reward).SingleOrDefault(x => x.UserId == userId);
 
         return res;
     }
 
     public async Task<Purpose> Create(Purpose purpose)
     {
-        var reward = _db.Rewards.SingleOrDefault(x => x.Id == purpose.RewardId);
+        var reward = _db.Reward.GetById(purpose.RewardId);
 
         if (reward == null)
         {
             throw new NotFoundException(nameof(purpose.RewardId), "Reward with this Id was not founded");
         }
 
-        await _db.Purposes.AddAsync(purpose);
-        await _db.SaveChangesAsync();
+        await _db.Purpose.AddAsync(purpose);
 
         return purpose;
     }
@@ -49,14 +49,13 @@ public class PurposeService : IPurposeService
             throw new ArgumentException("Id is required");
         }
 
-        var res = _db.Purposes.AsNoTracking().SingleOrDefault(x => x.UserId == userId);
+        var res = _db.Purpose.GetAll().SingleOrDefault(x => x.UserId == userId);
 
         if (res == null)
         {
             throw new NotFoundException(nameof(userId), "Purpose with Id was not foudnded");
         }
 
-        _db.Purposes.Remove(res);
-        await _db.SaveChangesAsync();
+        await _db.Purpose.RemoveAsync(res);
     }
 }

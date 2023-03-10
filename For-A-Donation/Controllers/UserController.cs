@@ -6,22 +6,25 @@ using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
 
 [Route("api/[Controller]/[action]")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController : Controller
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly IUserProgressService _userProgressService;
     private readonly IFamilyService _familyService;
     private readonly IMapper _mapper;
 
-    public UserController(IUserService userService, IUserProgressService userProgressService,
+    public UserController(IUnitOfWork unitOfWork, IUserService userService, IUserProgressService userProgressService,
                             IMapper mapper, IFamilyService familyService)
     {
+        _unitOfWork = unitOfWork;
         _userService = userService;
         _userProgressService = userProgressService;
         _mapper = mapper;
@@ -74,17 +77,13 @@ public class UserController : ControllerBase
                 res.Progress = progress;
             }
 
+            await _unitOfWork.SaveChanges();
             var result = _mapper.Map<UserViewModelResponse>(res);
 
             return Created(new Uri($"https://localhost:5165/User/GetById/{result.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
-        {
-            if (family.Id != new Guid())
-            {
-                await _familyService.Delete(family.Id);
-            }
-            
+        {   
             return Conflict(ex.Message);
         }
     }
@@ -136,5 +135,11 @@ public class UserController : ControllerBase
         {
             return Forbid(ex.Message);
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _unitOfWork.Dispose();
+        base.Dispose(disposing);
     }
 }

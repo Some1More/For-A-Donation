@@ -1,29 +1,29 @@
 ﻿using For_A_Donation.Services.Interfaces;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
-using Microsoft.EntityFrameworkCore;
 using For_A_Donation.Exceptions;
 using Task = System.Threading.Tasks.Task;
+using For_A_Donation.UnitOfWork;
 
 namespace For_A_Donation.Services;
 
 public class RewardService : IRewardService
 {
-    private readonly Context _db;
+    private readonly IUnitOfWork _db;
 
-    public RewardService(Context db)
+    public RewardService(IUnitOfWork db)
     {
         _db = db;
     }
 
     public List<Reward> GetAll()
     {
-        return _db.Rewards.AsNoTracking().ToList();
+        return _db.Reward.GetAll().ToList();
     }
 
     public Reward GetById(Guid id)
     {
-        var res = _db.Rewards.Include(x => x.Progress).AsNoTracking().SingleOrDefault(x => x.Id == id);
+        var res = _db.Reward.Include(x => x.Progress).SingleOrDefault(x => x.Id == id);
 
         if (res == null)
         {
@@ -40,38 +40,36 @@ public class RewardService : IRewardService
             throw new ArgumentException("Name is null or empty", nameof(name));
         }
 
-        return _db.Rewards.Include(x => x.Progress).AsNoTracking().Where(x => x.Name.Contains(name)).ToList();
+        return _db.Reward.Include(x => x.Progress).Where(x => x.Name.Contains(name)).ToList();
     }
 
     public List<Reward> GetByCategory(CategoryOfReward category)
     {
-        return _db.Rewards.AsNoTracking().Where(x => x.CategoryOfReward == category).ToList();
+        return _db.Reward.GetAll().Where(x => x.CategoryOfReward == category).ToList();
     }
 
     public async Task<Reward> Create(Reward reward)
     {
-        await _db.Rewards.AddAsync(reward);
-        await _db.SaveChangesAsync();
+        await _db.Reward.AddAsync(reward);
 
         return reward;
     }
 
     public async Task<Reward> Update(Reward reward)
     {
-        if (_db.Rewards.AsNoTracking().SingleOrDefault(x => x.Id == reward.Id) == null)
+        if (_db.Reward.GetById(reward.Id) == null)
         {
             throw new NotFoundException(nameof(reward), "Reward with this id was not founded");
         }
 
-        _db.Rewards.Update(reward);
-        await _db.SaveChangesAsync();
+        await _db.Reward.UpdateAsync(reward);
 
         return reward;
     }
 
     public async Task<Reward> GottenReward(Guid id)
     {
-        var reward = _db.Rewards.Find(id);
+        var reward = _db.Reward.GetById(id);
 
         if (reward == null)
         {
@@ -80,22 +78,20 @@ public class RewardService : IRewardService
 
         reward.IsGotten = true;
 
-        _db.Rewards.Update(reward);
-        await _db.SaveChangesAsync();
+        await _db.Reward.UpdateAsync(reward);
 
         return reward;
     }
 
     public async Task Delete(Guid id)
     {
-        var res = _db.Rewards.SingleOrDefault(x => x.Id == id);
+        var res = _db.Reward.GetById(id);
 
         if (res == null)
         {
             throw new NotFoundException(nameof(Reward), "Reward with this id was not founded");
         }
 
-        _db.Rewards.Remove(res);
-        await _db.SaveChangesAsync();
+        await _db.Reward.RemoveAsync(res);
     }
 }
