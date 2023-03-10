@@ -1,7 +1,7 @@
 ﻿using For_A_Donation.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.Reward;
 
 public class RewardViewModelRequest
 {
@@ -10,6 +10,7 @@ public class RewardViewModelRequest
 
     public string? Description { get; set; }
 
+    [Range(0, 4, ErrorMessage = "Value is out of range")]
     public CategoryOfReward CategoryOfReward { get; set; }
 
     public List<ProgressViewModel> Progress { get; set; } = new();

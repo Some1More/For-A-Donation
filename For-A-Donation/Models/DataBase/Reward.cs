@@ -1,4 +1,5 @@
-﻿using For_A_Donation.Models.Enums;
+﻿using For_A_Donation.Models.DataBase.Abstract;
+using For_A_Donation.Models.Enums;
 
 namespace For_A_Donation.Models.DataBase;
 

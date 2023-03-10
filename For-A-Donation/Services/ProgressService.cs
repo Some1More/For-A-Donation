@@ -15,13 +15,8 @@ public class ProgressService : IProgressService
         _db = db;
     }
 
-    public List<Progress> GetByRewardId(int rewardId)
+    public List<Progress> GetByRewardId(Guid rewardId)
     {
-        if (rewardId <= 0)
-        {
-            throw new ArgumentException("rewardId <= 0", nameof(rewardId));
-        }
-
         return _db.Progress.AsNoTracking().Where(x => x.RewardId == rewardId).ToList();
     }
 
@@ -41,13 +36,8 @@ public class ProgressService : IProgressService
         return progress;
     }*/
 
-    public async Task Delete(int id)
+    public async Task Delete(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Progress.SingleOrDefault(x => x.Id == id);
 
         if (res == null)

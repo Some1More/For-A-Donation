@@ -16,13 +16,8 @@ public class FamilyService : IFamilyService
         _db = context;
     }
 
-    public Family GetById(int id)
+    public Family GetById(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Families.AsNoTracking().FirstOrDefault(f => f.Id == id);
 
         if (res == null)
@@ -41,13 +36,8 @@ public class FamilyService : IFamilyService
         return family;
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("id <= 0", nameof(id));
-        }
-
         var res = _db.Families.FirstOrDefault(f => f.Id == id);
 
         if (res == null)

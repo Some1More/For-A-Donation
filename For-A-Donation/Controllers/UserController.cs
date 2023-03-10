@@ -3,7 +3,8 @@ using AutoMapper;
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.ViewModels;
+using For_A_Donation.Models.Enums;
+using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,24 +16,30 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IUserProgressService _userProgressService;
+    private readonly IFamilyService _familyService;
     private readonly IMapper _mapper;
 
-    public UserController(IUserService userService, IUserProgressService userProgressService, IMapper mapper)
+    public UserController(IUserService userService, IUserProgressService userProgressService,
+                            IMapper mapper, IFamilyService familyService)
     {
         _userService = userService;
         _userProgressService = userProgressService;
         _mapper = mapper;
+        _familyService = familyService;
     }
 
-    [Authorize]
     [HttpGet]
-    [Route("{id:int}")]
-    public ActionResult< UserViewModelResponse > GetById(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public ActionResult< UserViewModelResponse > GetById(Guid id)
     {
         try
         {
-            var res = _userService.GetById(id);
-            var result = _mapper.Map<UserViewModelResponse>(res);
+            var user = _userService.GetById(id);
+            var progress = _userProgressService.GetByUserId(id);
+            user.Progress = progress;
+
+            var result = _mapper.Map<UserViewModelResponse>(user);
 
             return Ok(result);
         }
@@ -40,38 +47,52 @@ public class UserController : ControllerBase
         {
             return NotFound(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [Registration]
     [HttpPost]
     public async Task<ActionResult< UserViewModelResponse >> Registration(UserViewModelRegistration model)
     {
+        Family family = new();
+
         try
         {
             var user = _mapper.Map<User>(model);
 
+            if (string.IsNullOrEmpty(user.FamilyId.ToString()))
+            {
+                family = await _familyService.Create(new Family());
+                user.FamilyId = family.Id;
+            }
+            
             var res = await _userService.Registration(user);
-            var progress = await _userProgressService.Create(res.Id);
-            res.Progress = progress;
+            res.Progress = null;
+
+            if (res.Role == Role.Son || res.Role == Role.Daughter)
+            {
+                var progress = await _userProgressService.Create(res.Id);
+                res.Progress = progress;
+            }
 
             var result = _mapper.Map<UserViewModelResponse>(res);
 
-            return Created(new Uri($"http://localhost:5165/User/GetById/{res.Id}"), result);
+            return Created(new Uri($"https://localhost:5165/User/GetById/{result.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
         {
+            if (family.Id != new Guid())
+            {
+                await _familyService.Delete(family.Id);
+            }
+            
             return Conflict(ex.Message);
         }
     }
 
-    [Authorize]
     [HttpPut]
-    [Route("{id:int}")]
-    public async Task<ActionResult< UserViewModelResponse >> Update(int id, UserViewModelRequest model)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public async Task<ActionResult< UserViewModelResponse >> Update(Guid id, UserViewModelRequest model)
     {
         try
         {
@@ -95,16 +116,12 @@ public class UserController : ControllerBase
         {
             return Conflict(ex.Message);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
-    [Authorize]
     [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    [Route("{id:Guid}")]
+    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
@@ -118,10 +135,6 @@ public class UserController : ControllerBase
         catch (ForbiddenExeption ex)
         {
             return Forbid(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

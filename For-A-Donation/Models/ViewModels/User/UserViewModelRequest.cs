@@ -1,7 +1,7 @@
 ﻿using For_A_Donation.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.User;
 
 public class UserViewModelRequest
 {
@@ -17,11 +17,10 @@ public class UserViewModelRequest
     [Required(ErrorMessage = "Password is required")]
     public string? Password { get; set; }
 
+
+    [Range(0, 1, ErrorMessage = "Value is out of range")]
     public Gender Gender { get; set; }
 
-    public Role Role { get; set; }
 
-
-    [Range(1, int.MaxValue, ErrorMessage = "Value is out of range")]
-    public int? FamilyId { get; set; }
+    public Guid? FamilyId { get; set; }
 }

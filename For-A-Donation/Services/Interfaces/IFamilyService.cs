@@ -11,9 +11,8 @@ public interface IFamilyService
     /// </summary>
     /// <param name="id"> Id семьи </param>
     /// <returns> Семья </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Family GetById(int id);
+    Family GetById(Guid id);
 
     /// <summary>
     /// Создание семьи
@@ -26,7 +25,6 @@ public interface IFamilyService
     /// Удаление семьи
     /// </summary>
     /// <param name="id"> Id семьи </param>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task Delete(int id);
+    Task Delete(Guid id);
 }

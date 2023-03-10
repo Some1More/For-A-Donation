@@ -20,9 +20,8 @@ public interface IUserService
     /// </summary>
     /// <param name="Id"> Id пользователя </param>
     /// <returns> Аккаунт пользователя </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    User GetById(int Id);
+    User GetById(Guid Id);
 
     /// <summary>
     /// Регистрация аккаунта
@@ -37,7 +36,6 @@ public interface IUserService
     /// </summary>
     /// <param name="user"> Данные пользователя </param>
     /// <returns> Аккаунт пользователя </returns>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
     /// <exception cref="ObjectNotUniqueException</exception>
     Task<User> Update(User user);
@@ -46,7 +44,6 @@ public interface IUserService
     /// Удаление аккаунта
     /// </summary>
     /// <param name="Id"> Id пользователя </param>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="NotFoundException"></exception>
-    Task Delete(int Id);
+    Task Delete(Guid Id);
 }

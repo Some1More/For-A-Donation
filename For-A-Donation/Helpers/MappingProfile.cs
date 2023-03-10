@@ -1,6 +1,11 @@
 ﻿using AutoMapper;
 using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.ViewModels;
+using For_A_Donation.Models.ViewModels.Family;
+using For_A_Donation.Models.ViewModels.Purpose;
+using For_A_Donation.Models.ViewModels.Reward;
+using For_A_Donation.Models.ViewModels.Task;
+using For_A_Donation.Models.ViewModels.User;
+using For_A_Donation.Models.ViewModels.Wish;
 using Task = For_A_Donation.Models.DataBase.Task;
 
 namespace For_A_Donation.Helpers;
@@ -14,6 +19,8 @@ public class MappingProfile : Profile
         CreateMap<UserViewModelRequest, User>();
 
         CreateMap<User, UserViewModelResponse>();
+
+        CreateMap<User, UserListViewModelResponse>();
 
         CreateMap<UserProgress, UserProgressViewModelResponce>();
 
@@ -35,6 +42,12 @@ public class MappingProfile : Profile
 
         CreateMap<Family, FamilyViewModelResponse>();
 
-        CreateMap<User, UserListViewModelResponse>();
+        CreateMap<Purpose, PurposeViewModelResponse>();
+
+        CreateMap<PurposeViewModelRequest, Purpose>();
+
+        CreateMap<WishViewModelRequest, Wish>();
+
+        CreateMap<Wish, WishViewModelResponse>();
     }
 }

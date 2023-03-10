@@ -1,7 +1,10 @@
 ﻿using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
+using For_A_Donation.Models.Enums;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 using Task = System.Threading.Tasks.Task;
 
 namespace For_A_Donation.Services;
@@ -15,11 +18,8 @@ public class UserService : IUserService
         _db = db;
     }
 
-    public User GetById(int id)
+    public User GetById(Guid id)
     {
-        if (id <= 0)
-            throw new ArgumentException("Id <= 0", nameof(id));
-
         var res = _db.Users.AsNoTracking().SingleOrDefault(x => x.Id == id);
 
         if (res == null)
@@ -30,6 +30,8 @@ public class UserService : IUserService
 
     public User Get(string login, string password)
     {
+        password = HashPassword(password);
+
         var res = _db.Users.AsNoTracking().SingleOrDefault(x => x.PhoneNumber == login && x.Password == password);
 
         if (res == null)
@@ -41,7 +43,11 @@ public class UserService : IUserService
     public async Task<User> Registration(User user)
     {
         if (!CheckExistByLogin(user.PhoneNumber))
+        {
             throw new ObjectNotUniqueException("User with this phone number already exists");
+        }
+
+        user.Password = HashPassword(user.Password);
 
         await _db.Users.AddAsync(user);
         await _db.SaveChangesAsync();
@@ -51,11 +57,10 @@ public class UserService : IUserService
 
     public async Task<User> Update(User user)
     {
-        if (user.Id <= 0)
-            throw new ArgumentException("Id <= 0", nameof(user.Id));
-
         if (!CheckExistByLogin(user.PhoneNumber))
+        {
             throw new ObjectNotUniqueException(nameof(user), "User with this phoneNumber already exists");
+        }
 
         var res = _db.Users.AsNoTracking().SingleOrDefault(x => x.Id == user.Id);
 
@@ -71,11 +76,8 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(Guid id)
     {
-        if (id <= 0)
-            throw new ArgumentException("Id <= 0", nameof(id));
-
         var user = _db.Users.SingleOrDefault(x => x.Id == id);
 
         if (user == null)
@@ -95,5 +97,12 @@ public class UserService : IUserService
             return false;
 
         return true;
+    }
+
+    private static string HashPassword(string password)
+    {
+        using SHA256 sha = SHA256.Create();
+        byte[] passwordBytes = Encoding.Default.GetBytes(password);
+        return sha.ComputeHash(passwordBytes).ToString();
     }
 }

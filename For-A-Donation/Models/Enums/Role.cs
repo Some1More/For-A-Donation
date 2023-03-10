@@ -5,5 +5,7 @@ public enum Role
     Father,
     Mother,
     Son,
-    Daughter
+    Daughter,
+    Grandfather,
+    Grandmother
 }

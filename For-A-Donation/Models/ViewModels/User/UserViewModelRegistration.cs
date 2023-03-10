@@ -1,7 +1,7 @@
 ﻿using For_A_Donation.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.User;
 
 public class UserViewModelRegistration
 {
@@ -22,10 +22,14 @@ public class UserViewModelRegistration
     [Compare("Password", ErrorMessage = "Password mismatch")]
     public string? PasswordConfirm { get; set; }
 
+
+    [Range(0, 1, ErrorMessage = "Value is out of range")]
     public Gender Gender { get; set; }
 
+
+    [Range(0, 5, ErrorMessage = "Value is out of range")]
     public Role Role { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Value is out of range")]
-    public int? FamilyId { get; set; }
+
+    public Guid? FamilyId { get; set; }
 }

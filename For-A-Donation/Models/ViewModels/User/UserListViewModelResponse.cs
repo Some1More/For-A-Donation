@@ -1,10 +1,10 @@
 ﻿using For_A_Donation.Models.Enums;
 
-namespace For_A_Donation.Models.ViewModels;
+namespace For_A_Donation.Models.ViewModels.User;
 
 public class UserListViewModelResponse
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public string Name { get; set; }
 
