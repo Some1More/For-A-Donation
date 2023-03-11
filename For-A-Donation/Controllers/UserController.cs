@@ -6,6 +6,7 @@ using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -14,22 +15,23 @@ namespace For_A_Donation.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly IUserProgressService _userProgressService;
     private readonly IFamilyService _familyService;
     private readonly IMapper _mapper;
 
-    public UserController(IUserService userService, IUserProgressService userProgressService,
+    public UserController(IUnitOfWork unitOfWork, IUserService userService, IUserProgressService userProgressService,
                             IMapper mapper, IFamilyService familyService)
     {
+        _unitOfWork = unitOfWork;
         _userService = userService;
         _userProgressService = userProgressService;
         _mapper = mapper;
         _familyService = familyService;
     }
 
-    [HttpGet]
-    [Route("{id:Guid}")]
+    [HttpGet("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< UserViewModelResponse > GetById(Guid id)
     {
@@ -47,21 +49,23 @@ public class UserController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
     [Registration]
     [HttpPost]
     public async Task<ActionResult< UserViewModelResponse >> Registration(UserViewModelRegistration model)
     {
-        Family family = new();
-
         try
         {
             var user = _mapper.Map<User>(model);
 
             if (string.IsNullOrEmpty(user.FamilyId.ToString()))
             {
-                family = await _familyService.Create(new Family());
+                var family = await _familyService.Create(new Family());
                 user.FamilyId = family.Id;
             }
             
@@ -74,23 +78,23 @@ public class UserController : ControllerBase
                 res.Progress = progress;
             }
 
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<UserViewModelResponse>(res);
 
             return Created(new Uri($"https://localhost:5165/User/GetById/{result.Id}"), result);
         }
         catch (ObjectNotUniqueException ex)
-        {
-            if (family.Id != new Guid())
-            {
-                await _familyService.Delete(family.Id);
-            }
-            
+        {   
             return Conflict(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 
-    [HttpPut]
-    [Route("{id:Guid}")]
+    [HttpPut("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< UserViewModelResponse >> Update(Guid id, UserViewModelRequest model)
     {
@@ -100,6 +104,8 @@ public class UserController : ControllerBase
             user.Id = id;
 
             var res = await _userService.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<UserViewModelResponse>(res);
 
             return Ok(result);
@@ -116,16 +122,21 @@ public class UserController : ControllerBase
         {
             return Conflict(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpDelete]
-    [Route("{id:Guid}")]
+    [HttpDelete("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
             await _userService.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
+
             return Ok();
         }
         catch (NotFoundException ex)
@@ -135,6 +146,10 @@ public class UserController : ControllerBase
         catch (ForbiddenExeption ex)
         {
             return Forbid(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 }

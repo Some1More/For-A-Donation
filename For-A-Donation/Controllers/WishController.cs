@@ -4,6 +4,7 @@ using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels.Wish;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -12,11 +13,13 @@ namespace For_A_Donation.Controllers;
 [ApiController]
 public class WishController : ControllerBase
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IWishService _wishService;
     private readonly IMapper _mapper;
 
-    public WishController(IWishService wishService, IMapper mapper)
+    public WishController(IUnitOfWork unitOfWork, IWishService wishService, IMapper mapper)
     {
+        _unitOfWork = unitOfWork;
         _wishService = wishService;
         _mapper = mapper;
     }
@@ -25,14 +28,20 @@ public class WishController : ControllerBase
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult<List<WishViewModelResponse>> GetAll()
     {
-        var res = _wishService.GetAll();
-        var result = _mapper.Map<List<WishViewModelResponse>>(res);
+        try
+        {
+            var res = _wishService.GetAll();
+            var result = _mapper.Map<List<WishViewModelResponse>>(res);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpGet]
-    [Route("{id:Guid}")]
+    [HttpGet("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult<WishViewModelResponse> GetById(Guid id)
     {
@@ -51,30 +60,52 @@ public class WishController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
     [HttpPost]
     public ActionResult<List<WishViewModelResponse>> GetByFilter(WithFilterViewModel model)
-    { 
-        var res = _wishService.GetByFilter(model);
-        var result = _mapper.Map<List<WishViewModelResponse>>(res);
-
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [Authorize(new string[] { "Son", "Daughter" })]
-    public async Task<ActionResult<WishViewModelResponse>> Create(WishViewModelRequest model)
     {
-        var wish = _mapper.Map<Wish>(model);
-        var res = await _wishService.Create(wish);
-        var result = _mapper.Map<WishViewModelResponse>(res);
+        try
+        {
+            var res = _wishService.GetByFilter(model);
+            var result = _mapper.Map<List<WishViewModelResponse>>(res);
 
-        return Created(new Uri($"https://localhost:7006/api/Wish/GetById/{result.Id}"), result);
+            return Ok(result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{id:Guid}")]
+    [HttpPost("{userId:Guid}")]
+    [Authorize(new string[] { "Son", "Daughter" })]
+    public async Task<ActionResult<WishViewModelResponse>> Create(Guid userId, WishViewModelRequest model)
+    {
+        try
+        {
+            var wish = _mapper.Map<Wish>(model);
+            wish.UserId = userId;
+            //TODO: передача Id не своего аккаунта
+
+            var res = await _wishService.Create(wish);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<WishViewModelResponse>(res);
+
+            return Created(new Uri($"https://localhost:7006/api/Wish/GetById/{result.Id}"), result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
+    }
+
+    [HttpPut("{id:Guid}")]
     [Authorize(new string[] { "Son", "Daughter" })]
     public async Task<ActionResult<WishViewModelResponse>> Update(Guid id, WishViewModelRequest model)
     {
@@ -84,6 +115,8 @@ public class WishController : ControllerBase
             wish.Id = id;
 
             var res = await _wishService.Update(wish);
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<WishViewModelResponse>(res);
 
             return Ok(result);
@@ -96,16 +129,21 @@ public class WishController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpDelete]
-    [Route("{id:Guid}")]
+    [HttpDelete("{id:Guid}")]
     [Authorize(new string[] { "Son", "Daughter" })]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
             await _wishService.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
+
             return Ok();
         }
         catch (NotFoundException ex)
@@ -115,6 +153,10 @@ public class WishController : ControllerBase
         catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 }

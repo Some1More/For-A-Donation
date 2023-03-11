@@ -4,6 +4,7 @@ using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels.Purpose;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -12,17 +13,18 @@ namespace For_A_Donation.Controllers;
 [ApiController]
 public class PurposeController : ControllerBase
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IPurposeService _purposeService;
     private readonly IMapper _mapper;
 
-    public PurposeController(IMapper mapper, IPurposeService purposeService)
+    public PurposeController(IMapper mapper, IPurposeService purposeService, IUnitOfWork unitOfWork)
     {
         _mapper = mapper;
         _purposeService = purposeService;
+        _unitOfWork = unitOfWork;
     }
 
-    [HttpGet]
-    [Route("{userId:int}")]
+    [HttpGet("{userId:int}")]
     [Authorize(new string[] { "Son", "Daughter" })]
     public ActionResult< PurposeViewModelResponse > GetByUserId(Guid userId)
     {
@@ -37,6 +39,10 @@ public class PurposeController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
 
@@ -44,23 +50,34 @@ public class PurposeController : ControllerBase
     [Authorize(new string[] { "Son", "Daughter" })]
     public async Task<ActionResult< PurposeViewModelResponse >> Create(PurposeViewModelRequest model)
     {
-        var purpose = _mapper.Map<Purpose>(model);
-        var res = await _purposeService.Create(purpose);
-        var result = _mapper.Map<PurposeViewModelResponse>(res);
+        try
+        {
+            var purpose = _mapper.Map<Purpose>(model);
 
-        return Created(new Uri($"https://localhost:7006/api/Purpose/GetByUserid/{res.UserId}"), result);
+            var res = await _purposeService.Create(purpose);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<PurposeViewModelResponse>(res);
+
+            return Created(new Uri($"https://localhost:7006/api/Purpose/GetByUserid/{res.UserId}"), result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
 
-    [HttpDelete]
-    [Route("{Id:int}")]
+    [HttpDelete("{Id:int}")]
     [Authorize(new string[] {"Son", "Daughter" })]
     public async Task<ActionResult> Delete(Guid Id)
     {
         try
         {
             await _purposeService.Delete(Id);
-            return Ok();
+            await _unitOfWork.SaveChangesAsync();
+
+            return NoContent();
         }
         catch (NotFoundException ex)
         {
@@ -70,6 +87,9 @@ public class PurposeController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 }

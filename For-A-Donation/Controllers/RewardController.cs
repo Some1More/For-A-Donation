@@ -5,6 +5,7 @@ using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.Reward;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -13,16 +14,19 @@ namespace For_A_Donation.Controllers;
 [ApiController]
 public class RewardController : ControllerBase
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IRewardService _rewardService;
     private readonly IUserProgressService _userProgressService;
     private readonly IMapper _mapper;
 
     public RewardController(IRewardService rewardService,
                             IUserProgressService userProgressService,
+                            IUnitOfWork unitOfWork,
                             IMapper mapper)
     {
         _rewardService = rewardService;
         _userProgressService = userProgressService;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -30,14 +34,20 @@ public class RewardController : ControllerBase
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<RewardListViewModelResponse> > GetAll()
     {
-        var res = _rewardService.GetAll();
-        var result = _mapper.Map<List<RewardListViewModelResponse>>(res);
+        try
+        {
+            var res = _rewardService.GetAll();
+            var result = _mapper.Map<List<RewardListViewModelResponse>>(res);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpGet]
-    [Route("{id:Guid}")]
+    [HttpGet("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< RewardViewModelResponse > GetById(Guid id)
     {
@@ -51,6 +61,10 @@ public class RewardController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 
@@ -69,10 +83,13 @@ public class RewardController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpGet]
-    [Route("{categoryNumber:int}")]
+    [HttpGet("{categoryNumber:int}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<RewardListViewModelResponse> > GetByCategory(int categoryNumber)
     {
@@ -92,21 +109,34 @@ public class RewardController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
     [HttpPost]
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< RewardViewModelResponse >> Create(RewardViewModelRequest model)
     {
-        var reward = _mapper.Map<Reward>(model);
-        var res = await _rewardService.Create(reward);
-        var result = _mapper.Map<RewardViewModelResponse>(res);
+        try
+        {
+            var reward = _mapper.Map<Reward>(model);
 
-        return Created(new Uri($"https://localhost:7006/api/Reward/GetById/{result.Id}"), result);
+            var res = await _rewardService.Create(reward);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<RewardViewModelResponse>(res);
+
+            return Created(new Uri($"https://localhost:7006/api/Reward/GetById/{result.Id}"), result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{id:Guid}")]
+    [HttpPut("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< RewardViewModelResponse >> Update(Guid id, RewardViewModelRequest model)
     {
@@ -116,6 +146,8 @@ public class RewardController : ControllerBase
             reward.Id = id;
 
             var res = await _rewardService.Update(reward);
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<RewardViewModelResponse>(res);
 
             return Ok(result);
@@ -124,10 +156,13 @@ public class RewardController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{id:Guid},{userId:Guid}")]
+    [HttpPut("{id:Guid},{userId:Guid}")]
     [Authorize(new string[] { "Son", "Daughter" })]
     public async Task<ActionResult> GottenReward(Guid id, Guid userId)
     {
@@ -145,27 +180,38 @@ public class RewardController : ControllerBase
                 await _userProgressService.Update(oneProgress);
             }
 
+            await _unitOfWork.SaveChangesAsync();
+
             return Ok();
         }
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpDelete]
-    [Route("{id:Guid}")]
+    [HttpDelete("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult> Delete(Guid id)
     {
         try
         {
             await _rewardService.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
+
             return Ok();
         }
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 }

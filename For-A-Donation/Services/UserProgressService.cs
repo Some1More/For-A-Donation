@@ -1,6 +1,7 @@
 ﻿using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
@@ -8,16 +9,16 @@ namespace For_A_Donation.Services;
 
 public class UserProgressService : IUserProgressService
 {
-    private readonly Context _db;
+    private readonly IUnitOfWork _db;
 
-    public UserProgressService(Context db)
+    public UserProgressService(IUnitOfWork db)
     {
         _db = db;
     }
 
     public List<UserProgress> GetByUserId(Guid userId)
     {
-        var res = _db.UserProgress.AsNoTracking().Where(x => x.UserId == userId).ToList();
+        var res = _db.UserProgress.GetAll().Where(x => x.UserId == userId).ToList();
 
         return res;
     }
@@ -34,22 +35,19 @@ public class UserProgressService : IUserProgressService
         }
 
         await _db.UserProgress.AddRangeAsync(userProgress);
-        await _db.SaveChangesAsync();
 
         return userProgress;
     }
 
     public async Task<UserProgress> Update(UserProgress userProgress)
     {
-        _db.UserProgress.Update(userProgress);
-        await _db.SaveChangesAsync();
+        await _db.UserProgress.UpdateAsync(userProgress);
 
         return userProgress;
     }
 
     public async Task Delete(List<UserProgress> userProgress)
     {
-        _db.UserProgress.RemoveRange(userProgress);
-        await _db.SaveChangesAsync();
+        await _db.UserProgress.RemoveRangeAsync(userProgress);
     }
 }
