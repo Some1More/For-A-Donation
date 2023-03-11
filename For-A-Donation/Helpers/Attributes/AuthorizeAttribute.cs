@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.Enums;
 
 namespace For_A_Donation.Helpers.Attributes;
 
@@ -18,7 +17,7 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var user = (User)context.HttpContext.Items["User"];
+        var user = (User?)context.HttpContext.Items["User"];
         
         if (user == null)
         {

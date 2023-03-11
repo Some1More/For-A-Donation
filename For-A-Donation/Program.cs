@@ -20,10 +20,12 @@ builder.Services.AddDbContext<Context>(option => option.UseSqlite("Data Source =
 
 builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
+builder.Services.AddScoped<IPurposeService, PurposeService>();
 builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<ITaskServicecs, TaskService>();
 builder.Services.AddScoped<IUserProgressService, UserProgressService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IWishService, WishService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

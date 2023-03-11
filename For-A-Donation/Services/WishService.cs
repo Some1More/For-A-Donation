@@ -19,7 +19,7 @@ public class WishService : IWishService
 
     public List<Wish> GetAll()
     {
-        return _db.Wishes.AsNoTracking().ToList();
+        return _db.Wish.GetAll().ToList();
     }
 
     public List<Wish> GetByFilter(WithFilterViewModel model)

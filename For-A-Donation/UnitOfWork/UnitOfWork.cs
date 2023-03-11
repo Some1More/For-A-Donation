@@ -30,14 +30,37 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         Wish = new WishRepository(context);
     }
 
-    public async Task SaveChanges()
+    ~UnitOfWork()
+    {
+        Dispose(false);
+    }
+
+    public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
     }
 
+
+    private bool _isDisposed = false;
+
     public void Dispose()
     {
-        _context.Dispose();
+        // Освобождаем все ресурсы
+        Dispose(true);
+
+        // Подавляем финализацию
         GC.SuppressFinalize(this);
+    }
+
+    public virtual void Dispose(bool disposing)
+    {
+        if (!_isDisposed && disposing)
+        {
+            // Освобождаем управляемые ресурсы
+        }
+
+        // Освобождаем неуправляемые ресурсы
+        _context.Dispose();
+        _isDisposed = true;
     }
 }

@@ -4,28 +4,30 @@ using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels.Family;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
 
-[Route("api/[controller]/[action]")]
 [ApiController]
+[Route("api/[controller]/[action]")]
+[Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
 public class FamilyController : ControllerBase
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IFamilyService _familyService;
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
-    public FamilyController(IFamilyService familyService,  IMapper mapper, IUserService userService)
+    public FamilyController(IUnitOfWork unitOfWork, IFamilyService familyService,  IMapper mapper, IUserService userService)
     {
+        _unitOfWork = unitOfWork;
         _familyService = familyService;
         _mapper = mapper;
         _userService = userService;
     }
 
-    [HttpGet]
-    [Route("{id:Guid}")]
-    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    [HttpGet("{id:Guid}")]
     public ActionResult< FamilyViewModelResponse > GetById(Guid id)
     {
         try
@@ -39,11 +41,13 @@ public class FamilyController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPost]
-    [Route("{userId:Guid}")]
-    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    [HttpPost("{userId:Guid}")]
     public async Task<ActionResult< FamilyViewModelResponse >> Create(Guid userId, FamilyViewModelRequest model)
     {
         try
@@ -54,6 +58,8 @@ public class FamilyController : ControllerBase
             var user = _userService.GetById(userId);
             user.FamilyId = family.Id;
             await _userService.Update(user);
+
+            await _unitOfWork.SaveChangesAsync();
 
             var result = _mapper.Map<FamilyViewModelResponse>(res);
 
@@ -71,18 +77,22 @@ public class FamilyController : ControllerBase
         {
             return Forbid(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{userId:Guid},{familyId:Guid}")]
-    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    [HttpPut("{userId:Guid},{familyId:Guid}")]
     public async Task<ActionResult< FamilyViewModelResponse >> AddMember(Guid userId, Guid familyId)
     {
         try
         {
             var user = _userService.GetById(userId);
             user.FamilyId = familyId;
+
             await _userService.Update(user);
+            await _unitOfWork.SaveChangesAsync();
 
             var family = _familyService.GetById(familyId);
             var result = _mapper.Map<FamilyViewModelResponse>(family);
@@ -101,22 +111,29 @@ public class FamilyController : ControllerBase
         {
             return Forbid(ex.Message);
         }
-
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpDelete]
-    [Route("{id:Guid}")]
-    [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
+    [HttpDelete("{id:Guid}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         try
         {
             await _familyService.Delete(id);
-            return Ok();
+            await _unitOfWork.SaveChangesAsync();
+
+            return NoContent();
         }
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 }

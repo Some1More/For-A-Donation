@@ -13,7 +13,7 @@ namespace For_A_Donation.Controllers;
 
 [Route("api/[Controller]/[action]")]
 [ApiController]
-public class UserController : Controller
+public class UserController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
@@ -31,8 +31,7 @@ public class UserController : Controller
         _familyService = familyService;
     }
 
-    [HttpGet]
-    [Route("{id:Guid}")]
+    [HttpGet("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< UserViewModelResponse > GetById(Guid id)
     {
@@ -50,21 +49,23 @@ public class UserController : Controller
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
     [Registration]
     [HttpPost]
     public async Task<ActionResult< UserViewModelResponse >> Registration(UserViewModelRegistration model)
     {
-        Family family = new();
-
         try
         {
             var user = _mapper.Map<User>(model);
 
             if (string.IsNullOrEmpty(user.FamilyId.ToString()))
             {
-                family = await _familyService.Create(new Family());
+                var family = await _familyService.Create(new Family());
                 user.FamilyId = family.Id;
             }
             
@@ -77,7 +78,8 @@ public class UserController : Controller
                 res.Progress = progress;
             }
 
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<UserViewModelResponse>(res);
 
             return Created(new Uri($"https://localhost:5165/User/GetById/{result.Id}"), result);
@@ -86,10 +88,13 @@ public class UserController : Controller
         {   
             return Conflict(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{id:Guid}")]
+    [HttpPut("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< UserViewModelResponse >> Update(Guid id, UserViewModelRequest model)
     {
@@ -99,6 +104,8 @@ public class UserController : Controller
             user.Id = id;
 
             var res = await _userService.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<UserViewModelResponse>(res);
 
             return Ok(result);
@@ -115,16 +122,21 @@ public class UserController : Controller
         {
             return Conflict(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpDelete]
-    [Route("{id:Guid}")]
+    [HttpDelete("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
             await _userService.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
+
             return Ok();
         }
         catch (NotFoundException ex)
@@ -135,11 +147,9 @@ public class UserController : Controller
         {
             return Forbid(ex.Message);
         }
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        _unitOfWork.Dispose();
-        base.Dispose(disposing);
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 }

@@ -18,5 +18,5 @@ public interface IGenericRepository<TEntity> where TEntity : class
 
     Task RemoveAsync(TEntity entity);
 
-    Task RemoveRangeAsync(IEnumerable<TEntity> entities)
+    Task RemoveRangeAsync(IEnumerable<TEntity> entities);
 }

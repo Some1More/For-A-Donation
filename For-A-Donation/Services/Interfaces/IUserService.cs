@@ -28,7 +28,7 @@ public interface IUserService
     /// </summary>
     /// <param name="user"> Данные пользователь </param>
     /// <returns> Аккаунт пользователя </returns>
-    /// <exception cref="ObjectNotUniqueException</exception>
+    /// <exception cref="ObjectNotUniqueException"</exception>
     Task<User> Registration(User user);
 
     /// <summary>
@@ -37,7 +37,7 @@ public interface IUserService
     /// <param name="user"> Данные пользователя </param>
     /// <returns> Аккаунт пользователя </returns>
     /// <exception cref="NotFoundException"></exception>
-    /// <exception cref="ObjectNotUniqueException</exception>
+    /// <exception cref="ObjectNotUniqueException"</exception>
     Task<User> Update(User user);
 
     /// <summary>

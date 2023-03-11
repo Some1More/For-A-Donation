@@ -20,7 +20,7 @@ public interface IUnitOfWork
 
     public WishRepository Wish { get; }
 
-    public Task SaveChanges();
+    public Task SaveChangesAsync();
 
     public void Dispose();
 }

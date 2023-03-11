@@ -3,6 +3,7 @@ using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
+using For_A_Donation.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -11,14 +12,17 @@ namespace For_A_Donation.Controllers;
 [ApiController]
 public class TaskController : ControllerBase
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ITaskServicecs _taskService;
     private readonly IUserProgressService _userProgressService;
     private readonly IMapper _mapper;
 
-    public TaskController(ITaskServicecs taskService, IUserProgressService userProgressService, IMapper mapper)
+    public TaskController(ITaskServicecs taskService, IUserProgressService userProgressService,
+                                IUnitOfWork unitOfWork, IMapper mapper)
     {
         _taskService = taskService;
         _userProgressService = userProgressService;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -26,14 +30,20 @@ public class TaskController : ControllerBase
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<TaskViewModelResponse> > GetAll()
     {
-        var res = _taskService.GetAll();
-        var result = _mapper.Map<List<TaskViewModelResponse>>(res);
+        try
+        {
+            var res = _taskService.GetAll();
+            var result = _mapper.Map<List<TaskViewModelResponse>>(res);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpGet]
-    [Route("{id:Guid}")]
+    [HttpGet("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< TaskViewModelResponse > GetById(Guid id)
     {
@@ -47,6 +57,10 @@ public class TaskController : ControllerBase
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 
@@ -65,31 +79,51 @@ public class TaskController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
     [HttpPost]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
     public ActionResult< List<TaskViewModelResponse>> GetByFilter(TaskFilterViewModel model)
     {
-        var res = _taskService.GetByFilter(model);
-        var result = _mapper.Map<List<TaskViewModelResponse>>(res);
+        try
+        {
+            var res = _taskService.GetByFilter(model);
+            var result = _mapper.Map<List<TaskViewModelResponse>>(res);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
     [HttpPost]
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< TaskViewModelResponse >> Create(TaskViewModelRequest model)
     {
-        var task = _mapper.Map<Models.DataBase.Task>(model);
-        var res = await _taskService.Create(task);
-        var result = _mapper.Map<TaskViewModelResponse>(res);
+        try
+        {
+            var task = _mapper.Map<Models.DataBase.Task>(model);
 
-        return Created(new Uri($"https://localhost:7006/api/Task/GetById/{result.Id}"), result);
+            var res = await _taskService.Create(task);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<TaskViewModelResponse>(res);
+
+            return Created(new Uri($"https://localhost:7006/api/Task/GetById/{result.Id}"), result);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{id:Guid}")]
+    [HttpPut("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< TaskViewModelResponse >> Update(Guid id, TaskViewModelRequest model)
     {
@@ -99,6 +133,8 @@ public class TaskController : ControllerBase
             task.Id = id;
 
             var res = await _taskService.Update(task);
+            await _unitOfWork.SaveChangesAsync();
+
             var result = _mapper.Map<TaskViewModelResponse>(res);
 
             return Ok(result);
@@ -107,10 +143,13 @@ public class TaskController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpPut]
-    [Route("{id:Guid},{userId:Guid}")]
+    [HttpPut("{id:Guid},{userId:Guid}")]
     [Authorize(new string[] { "Son", "Daughter" })]
     public async Task<ActionResult> FinishedTask(Guid id, Guid userId)
     {
@@ -122,6 +161,7 @@ public class TaskController : ControllerBase
             progress.Points += task.Points;
 
             await _userProgressService.Update(progress);
+            await _unitOfWork.SaveChangesAsync();
 
             var result = _mapper.Map<TaskViewModelResponse>(task);
 
@@ -131,21 +171,30 @@ public class TaskController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
     }
 
-    [HttpDelete]
-    [Route("{id:Guid}")]
+    [HttpDelete("{id:Guid}")]
     [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
             await _taskService.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
+
             return Ok();
         }
         catch (NotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
         }
     }
 }
