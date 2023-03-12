@@ -150,7 +150,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpPatch("{taskId:Guid},{userId:Guid}")]
-    [Authorize(new string[] { "Son", "Daughter" })]
+    [Authorize(new string[] { "Son", "Daughter", "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< TaskViewModelResponse >> IsFinishedTask(Guid taskId, Guid userId)
     {
         try
@@ -178,7 +178,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpPatch("{taskId:Guid},{userId:Guid}")]
-    [Authorize(new string[] { "Son", "Daughter" })]
+    [Authorize(new string[] { "Father", "Mother", "Grandfather", "Grandmother" })]
     public async Task<ActionResult< TaskViewModelResponse >> IsNotFinishedTask(Guid taskId, Guid userId)
     {
         try
