@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace For_A_Donation.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20230309084613_Initial")]
+    [Migration("20230312154507_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -123,6 +123,9 @@ namespace For_A_Donation.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsFinished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPerformed")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")

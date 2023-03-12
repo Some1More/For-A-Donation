@@ -57,7 +57,15 @@ public interface ITaskServicecs
     /// <param name="id"> Id задачи </param>
     /// <returns> Завершённая задача </returns>
     /// <exception cref="NotFoundException"></exception>
-    Task<Task> FinishedTask(Guid id);
+    Task<Task> IsFinishedTask(Guid id);
+
+    /// <summary>
+    /// Не выполнение задачи
+    /// </summary>
+    /// <param name="id"> Id задачи </param>
+    /// <returns> Невыполненная задача </returns>
+    /// <exception cref="NotFoundException"></exception>
+    Task<Task> IsNotFinishedTask(Guid id);
 
     /// <summary>
     /// Удаление задач

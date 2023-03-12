@@ -48,12 +48,11 @@ public class FamilyController : ControllerBase
     }
 
     [HttpPost("{userId:Guid}")]
-    public async Task<ActionResult< FamilyViewModelResponse >> Create(Guid userId, FamilyViewModelRequest model)
+    public async Task<ActionResult< FamilyViewModelResponse >> Create(Guid userId)
     {
         try
         {
-            var family = _mapper.Map<Family>(model);
-            var res = await _familyService.Create(family);
+            var family = await _familyService.Create();
 
             var user = _userService.GetById(userId);
             user.FamilyId = family.Id;
@@ -61,7 +60,7 @@ public class FamilyController : ControllerBase
 
             await _unitOfWork.SaveChangesAsync();
 
-            var result = _mapper.Map<FamilyViewModelResponse>(res);
+            var result = _mapper.Map<FamilyViewModelResponse>(family);
 
             return Created(new Uri($"https://localhost:7006/api/Family/GetById/{result.Id}"), result);
         }

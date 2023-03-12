@@ -85,7 +85,7 @@ public class TaskService : ITaskServicecs
         return task;
     }
 
-    public async Task<Task> FinishedTask(Guid id)
+    public async Task<Task> IsFinishedTask(Guid id)
     {
         var task = _db.Task.GetById(id);
 
@@ -95,6 +95,23 @@ public class TaskService : ITaskServicecs
         }
 
         task.IsFinished = true;
+        task.IsPerformed = false;
+
+        await _db.Task.UpdateAsync(task);
+
+        return task;
+    }
+
+    public async Task<Task> IsNotFinishedTask(Guid id)
+    {
+        var task = _db.Task.GetById(id);
+
+        if (task == null)
+        {
+            throw new NotFoundException(nameof(Task), "Task with this id was not founded");
+        }
+
+        task.IsPerformed = false;
 
         await _db.Task.UpdateAsync(task);
 

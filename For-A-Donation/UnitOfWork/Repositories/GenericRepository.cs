@@ -7,10 +7,12 @@ namespace For_A_Donation.UnitOfWork.Repositories;
 
 public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
+    private readonly Context _context;
     private readonly DbSet<TEntity> _db;
 
     public GenericRepository(Context context)
     {
+        _context = context;
         _db = context.Set<TEntity>();
     }
 
@@ -28,7 +30,16 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public TEntity? GetById(Guid Id)
     {
-        return _db.Find(Id);
+        var entity = _db.Find(Id);
+
+        if (entity == null)
+        {
+            return null;
+        }
+
+        _context.Entry(entity).State = EntityState.Detached;
+
+        return entity;
     }
 
     public async Task AddAsync(TEntity entity)

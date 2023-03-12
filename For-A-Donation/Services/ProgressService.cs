@@ -1,4 +1,5 @@
-﻿using For_A_Donation.Exceptions;
+﻿using AutoMapper.Configuration.Annotations;
+using For_A_Donation.Exceptions;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Services.Interfaces;
 using For_A_Donation.UnitOfWork;
@@ -20,22 +21,6 @@ public class ProgressService : IProgressService
         return _db.Progress.GetAll().Where(x => x.RewardId == rewardId).ToList();
     }
 
-    /*public async Task<List<Progress>> Create(List<Progress> progress)
-    {
-        await _db.Progress.AddRangeAsync(progress);
-        await _db.SaveChangesAsync();
-        
-        return progress;
-    }*/
-
-    /*public async Task<List<Progress>> Update(List<Progress> progress)
-    {   
-        _db.Progress.UpdateRange(progress);
-        await _db.SaveChangesAsync();
-
-        return progress;
-    }*/
-
     public async Task Delete(Guid id)
     {
         var res = _db.Progress.GetById(id);
@@ -46,5 +31,11 @@ public class ProgressService : IProgressService
         }
 
         await _db.Progress.RemoveAsync(res);
+    }
+
+    public async Task DeleteListByUserId(Guid rewardId)
+    {
+        var res = _db.Progress.GetAll().Where(x => x.RewardId == rewardId);
+        await _db.Progress.RemoveRangeAsync(res);
     }
 }

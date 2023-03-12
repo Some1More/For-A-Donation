@@ -16,16 +16,19 @@ public class RewardController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRewardService _rewardService;
+    private readonly IProgressService _progressService;
     private readonly IUserProgressService _userProgressService;
     private readonly IMapper _mapper;
 
     public RewardController(IRewardService rewardService,
                             IUserProgressService userProgressService,
+                            IProgressService progressService,
                             IUnitOfWork unitOfWork,
                             IMapper mapper)
     {
         _rewardService = rewardService;
         _userProgressService = userProgressService;
+        _progressService = progressService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -145,6 +148,7 @@ public class RewardController : ControllerBase
             var reward = _mapper.Map<Reward>(model);
             reward.Id = id;
 
+            await _progressService.DeleteListByUserId(id);
             var res = await _rewardService.Update(reward);
             await _unitOfWork.SaveChangesAsync();
 

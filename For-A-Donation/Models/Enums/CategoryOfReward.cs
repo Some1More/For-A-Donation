@@ -6,5 +6,6 @@ public enum CategoryOfReward
     Food,
     Purchases,
     Traveling,
-    Games
+    Games,
+    Sport
 }
