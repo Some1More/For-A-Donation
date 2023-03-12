@@ -38,8 +38,6 @@ public class MappingProfile : Profile
 
         CreateMap<Progress, ProgressViewModel>();
 
-        CreateMap<FamilyViewModelRequest, Family>();
-
         CreateMap<Family, FamilyViewModelResponse>();
 
         CreateMap<Purpose, PurposeViewModelResponse>();

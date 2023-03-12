@@ -10,6 +10,6 @@ public class WishViewModelRequest
 
     public string? Description { get; set; }
 
-    [Range(0, 4)]
+    [Range(0, 5, ErrorMessage = "Value is out of range")]
     public CategoryOfReward Category { get; set; }
 }

@@ -122,6 +122,9 @@ namespace For_A_Donation.Migrations
                     b.Property<bool>("IsFinished")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsPerformed")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");

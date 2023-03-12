@@ -28,9 +28,11 @@ public class FamilyService : IFamilyService
         return res;
     }
 
-    public async Task<Family> Create(Family family)
+    public async Task<Family> Create()
     {
+        Family family = new();
         await _db.Family.AddAsync(family);
+
         return family;
     }
 

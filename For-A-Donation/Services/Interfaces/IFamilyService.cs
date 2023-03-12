@@ -17,9 +17,8 @@ public interface IFamilyService
     /// <summary>
     /// Создание семьи
     /// </summary>
-    /// <param name="family"> Семья на создание </param>
     /// <returns> Созданная семья </returns>
-    Task<Family> Create(Family family);
+    Task<Family> Create();
 
     /// <summary>
     /// Удаление семьи

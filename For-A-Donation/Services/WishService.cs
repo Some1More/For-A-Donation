@@ -76,6 +76,7 @@ public class WishService : IWishService
             throw new NotFoundException(nameof(wish.Id), "Wish with this Id was not founded");
         }
 
+        wish.UserId = res.UserId;
         await _db.Wish.UpdateAsync(wish);
 
         return wish;

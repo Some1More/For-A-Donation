@@ -65,7 +65,7 @@ public class UserController : ControllerBase
 
             if (string.IsNullOrEmpty(user.FamilyId.ToString()))
             {
-                var family = await _familyService.Create(new Family());
+                var family = await _familyService.Create();
                 user.FamilyId = family.Id;
             }
             

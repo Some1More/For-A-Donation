@@ -149,13 +149,13 @@ public class TaskController : ControllerBase
         }
     }
 
-    [HttpPut("{id:Guid},{userId:Guid}")]
+    [HttpPatch("{taskId:Guid},{userId:Guid}")]
     [Authorize(new string[] { "Son", "Daughter" })]
-    public async Task<ActionResult> FinishedTask(Guid id, Guid userId)
+    public async Task<ActionResult< TaskViewModelResponse >> IsFinishedTask(Guid taskId, Guid userId)
     {
         try
         {
-            var task = await _taskService.FinishedTask(id);
+            var task = await _taskService.IsFinishedTask(taskId);
 
             var progress = _userProgressService.GetByUserId(userId).Single(x => x.CategoryOfTask == task.CategoryOfTask);
             progress.Points += task.Points;
@@ -165,7 +165,35 @@ public class TaskController : ControllerBase
 
             var result = _mapper.Map<TaskViewModelResponse>(task);
 
-            return Ok();
+            return Ok(result);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
+    }
+
+    [HttpPatch("{taskId:Guid},{userId:Guid}")]
+    [Authorize(new string[] { "Son", "Daughter" })]
+    public async Task<ActionResult< TaskViewModelResponse >> IsNotFinishedTask(Guid taskId, Guid userId)
+    {
+        try
+        {
+            var task = await _taskService.IsNotFinishedTask(taskId);
+
+            var progress = _userProgressService.GetByUserId(userId).Single(x => x.CategoryOfTask == task.CategoryOfTask);
+            progress.Points -= task.Points / 2;
+
+            await _userProgressService.Update(progress);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<TaskViewModelResponse>(task);
+
+            return Ok(result);
         }
         catch (NotFoundException ex)
         {

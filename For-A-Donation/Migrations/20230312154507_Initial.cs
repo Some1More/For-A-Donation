@@ -49,7 +49,8 @@ namespace For_A_Donation.Migrations
                     Points = table.Column<int>(type: "INTEGER", nullable: false),
                     CategoryOfTask = table.Column<int>(type: "INTEGER", nullable: false),
                     DateTimeFinish = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsFinished = table.Column<bool>(type: "INTEGER", nullable: false)
+                    IsFinished = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsPerformed = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

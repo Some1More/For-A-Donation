@@ -21,6 +21,8 @@ public class UserViewModelRequest
     [Range(0, 1, ErrorMessage = "Value is out of range")]
     public Gender Gender { get; set; }
 
+    [Range(0, 5, ErrorMessage = "Value is out of range")]
+    public Role Role { get; set; }
 
     public Guid? FamilyId { get; set; }
 }

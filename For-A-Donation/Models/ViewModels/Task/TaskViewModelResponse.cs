@@ -21,4 +21,6 @@ public class TaskViewModelResponse
     public DateTime DateTimeFinish { get; set; }
 
     public bool IsFinished { get; set; } = false;
+
+    public bool IsPerformed { get; set; } = true;
 }
