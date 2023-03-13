@@ -57,7 +57,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult< TaskViewModelResponse > Authorization(UserViewModelAuthorization model)
+    public ActionResult< UserViewModelResponse > Authorization(UserViewModelAuthorization model)
     {
         try
         {
