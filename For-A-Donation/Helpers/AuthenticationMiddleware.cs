@@ -21,32 +21,27 @@ public class AuthenticationMiddleware
         var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
         if (token != null)
-            AddUserToContext(context, userService, token);
+        {
+            context.Items["User"] = GetUser(token, userService);
+        }
 
         await _next(context);
     }
 
-    public void AddUserToContext(HttpContext context, IUserService userService, string token)
+    public User? GetUser(string token, IUserService userService)
     {
         try
         {
-            context.Items["User"] = GetUser(token, userService);
+            string[] tokenDecode = TokenDecode(token);
+            var user = userService.Get(tokenDecode[0], tokenDecode[1]);
+
+            return user;
         }
         catch (NotFoundException)
         {
-            // todo: need to add logger
+            // log
+            return null;
         }
-    }
-
-    public User GetUser(string token, IUserService userService)
-    {
-        string[] tokenDecode = TokenDecode(token);
-        var user = userService.Get(tokenDecode[0], tokenDecode[1]);
-
-        if (user == null)
-            throw new NotFoundException("User not found!");
-
-        return user;
     }
 
     public string[] TokenDecode(string token)

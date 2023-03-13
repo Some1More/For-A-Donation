@@ -4,6 +4,7 @@ using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
+using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
 using For_A_Donation.UnitOfWork;
@@ -55,8 +56,31 @@ public class UserController : ControllerBase
         }
     }
 
-    [Registration]
     [HttpPost]
+    public ActionResult< TaskViewModelResponse > Authorization(UserViewModelAuthorization model)
+    {
+        try
+        {
+            var user = _userService.Get(model.PhoneNumber, model.Password);
+            var progress = _userProgressService.GetByUserId(user.Id);
+            user.Progress = progress;
+
+            var result = _mapper.Map<UserViewModelResponse>(user);
+
+            return Ok(result);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        finally
+        {
+            _unitOfWork.Dispose();
+        }
+    }
+
+    [HttpPost]
+    [Registration]
     public async Task<ActionResult< UserViewModelResponse >> Registration(UserViewModelRegistration model)
     {
         try
