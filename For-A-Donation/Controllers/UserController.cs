@@ -4,7 +4,6 @@ using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.Enums;
-using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
 using For_A_Donation.UnitOfWork;
