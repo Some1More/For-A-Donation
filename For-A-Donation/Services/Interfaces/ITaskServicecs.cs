@@ -43,6 +43,7 @@ public interface ITaskServicecs
     /// <returns> Созданная задача </returns>
     /// <exception cref="NotFoundException"></exception>
     /// <exception cref="CreateTaskException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     Task<Task> Create(Task task);
 
     /// <summary>
@@ -51,6 +52,8 @@ public interface ITaskServicecs
     /// <param name="task"> Задача на изменение </param>
     /// <returns> Изменённая задача </returns>
     /// <exception cref="NotFoundException"></exception>
+    /// <exception cref="CreateTaskException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     Task<Task> Update(Task task);
 
     /// <summary>

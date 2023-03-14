@@ -151,13 +151,15 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpDelete("{id:Guid}")]
+    [HttpDelete()]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete()
     {
         try
         {
-            await _userService.Delete(id);
+            var user = HttpContext.Items["User"] as User;
+
+            await _userService.Delete(user.Id);
             await _unitOfWork.SaveChangesAsync();
 
             return Ok();

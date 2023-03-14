@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using For_A_Donation.Exceptions;
 using For_A_Donation.Helpers.Attributes;
+using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
 using For_A_Donation.UnitOfWork;
@@ -108,7 +109,10 @@ public class TaskController : ControllerBase
     {
         try
         {
+            var user = HttpContext.Items["User"] as User;
+
             var task = _mapper.Map<Models.DataBase.Task>(model);
+            task.CustomerId = user.Id;
 
             var res = await _taskService.Create(task);
             await _unitOfWork.SaveChangesAsync();
@@ -125,6 +129,10 @@ public class TaskController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
         finally
         {
             _unitOfWork.Dispose();
@@ -137,8 +145,11 @@ public class TaskController : ControllerBase
     {
         try
         {
+            var user = HttpContext.Items["User"] as User;
+
             var task = _mapper.Map<Models.DataBase.Task>(model);
             task.Id = id;
+            task.CustomerId = user.Id;
 
             var res = await _taskService.Update(task);
             await _unitOfWork.SaveChangesAsync();

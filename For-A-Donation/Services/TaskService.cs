@@ -68,42 +68,7 @@ public class TaskService : ITaskServicecs
 
     public async Task<Task> Create(Task task)
     {
-        if (task.CustomerId == task.ExecutorId)
-        {
-            throw new CreateTaskException("Customer Id = Executor Id");
-        }
-
-        var executor = _db.User.GetById(task.ExecutorId);
-
-        if (executor == null)
-        {
-            throw new NotFoundException(nameof(User), "User-Executor with this Id was not founded");
-        }
-
-        else if (executor.Role != Role.Son && executor.Role != Role.Daughter)
-        {
-            throw new CreateTaskException(nameof(task.ExecutorId), "Executor cannot be of legal age");
-        }
-
-        var customer = _db.User.GetById(task.CustomerId);
-
-        if (customer == null)
-        {
-            throw new NotFoundException(nameof(User), "User_Customer with this Id was not founded");
-        }
-
-        else if (customer.Role == Role.Son || customer.Role != Role.Daughter)
-        {
-            throw new CreateTaskException(nameof(task.CustomerId), "Customer cannot be a child");
-        }
-
-        else if (executor.FamilyId != customer.FamilyId)
-        {
-            throw new CreateTaskException("Executor and customer from different families");
-        }
-
-        // сделать такую же проверку в методе Update
-        // todo: родитель передаёт не свой id
+        ValidateForCreateTask(task.ExecutorId, task.CustomerId);
 
         await _db.Task.AddAsync(task);
         return task;
@@ -111,6 +76,8 @@ public class TaskService : ITaskServicecs
 
     public async Task<Task> Update(Task task)
     {
+        ValidateForCreateTask(task.ExecutorId, task.CustomerId);
+
         if (_db.Task.GetById(task.Id) == null)
         {
             throw new NotFoundException(nameof(task), "Task with this id was not founded");
@@ -164,5 +131,52 @@ public class TaskService : ITaskServicecs
         }
 
         await _db.Task.RemoveAsync(res);
+    }
+
+    private void ValidateForCreateTask(Guid executorId, Guid customerId)
+    {
+        if (executorId == new Guid())
+        {
+            throw new ArgumentException("Executor Id is required", nameof(executorId));
+        }
+
+        else if (customerId == new Guid())
+        {
+            throw new ArgumentException("Cunsumer Id is required", nameof(customerId));
+        }
+
+        else if (customerId == executorId)
+        {
+            throw new CreateTaskException("Customer Id = Executor Id");
+        }
+
+        var executor = _db.User.GetById(executorId);
+
+        if (executor == null)
+        {
+            throw new NotFoundException(nameof(User), "User-Executor with this Id was not founded");
+        }
+
+        else if (executor.Role != Role.Son && executor.Role != Role.Daughter)
+        {
+            throw new CreateTaskException(nameof(customerId), "Executor cannot be of legal age");
+        }
+
+        var customer = _db.User.GetById(customerId);
+
+        if (customer == null)
+        {
+            throw new NotFoundException(nameof(User), "User_Customer with this Id was not founded");
+        }
+
+        else if (customer.Role == Role.Son || customer.Role != Role.Daughter)
+        {
+            throw new CreateTaskException(nameof(customerId), "Customer cannot be a child");
+        }
+
+        else if (executor.FamilyId != customer.FamilyId)
+        {
+            throw new CreateTaskException("Executor and customer from different families");
+        }
     }
 }

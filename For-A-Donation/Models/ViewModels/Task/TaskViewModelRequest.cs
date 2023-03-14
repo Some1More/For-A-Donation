@@ -10,9 +10,8 @@ public class TaskViewModelRequest
 
     public string? Description { get; set; }
 
+    [Required]
     public Guid ExecutorId { get; set; }
-
-    public Guid CustomerId { get; set; }
 
     [Range(0, int.MaxValue, ErrorMessage = "Value is out of range")]
     public int Points { get; set; }
