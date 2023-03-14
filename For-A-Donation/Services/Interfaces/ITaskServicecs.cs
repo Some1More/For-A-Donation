@@ -41,6 +41,8 @@ public interface ITaskServicecs
     /// </summary>
     /// <param name="task"> Новая задача </param>
     /// <returns> Созданная задача </returns>
+    /// <exception cref="NotFoundException"></exception>
+    /// <exception cref="CreateTaskException"></exception>
     Task<Task> Create(Task task);
 
     /// <summary>

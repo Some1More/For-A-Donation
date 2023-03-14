@@ -18,7 +18,7 @@ public class FamilyService : IFamilyService
 
     public Family GetById(Guid id)
     {
-        var res = _db.Family.GetById(id);
+        var res = _db.Family.Include(x => x.Members).SingleOrDefault(x => x.Id == id);
 
         if (res == null)
         {

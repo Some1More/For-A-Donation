@@ -117,6 +117,14 @@ public class TaskController : ControllerBase
 
             return Created(new Uri($"https://localhost:7006/api/Task/GetById/{result.Id}"), result);
         }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (CreateTaskException ex)
+        {
+            return BadRequest(ex.Message);
+        }
         finally
         {
             _unitOfWork.Dispose();

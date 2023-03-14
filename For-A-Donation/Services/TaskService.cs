@@ -4,7 +4,6 @@ using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
 using For_A_Donation.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 using Task = For_A_Donation.Models.DataBase.Task;
 
 namespace For_A_Donation.Services;
@@ -69,6 +68,43 @@ public class TaskService : ITaskServicecs
 
     public async Task<Task> Create(Task task)
     {
+        if (task.CustomerId == task.ExecutorId)
+        {
+            throw new CreateTaskException("Customer Id = Executor Id");
+        }
+
+        var executor = _db.User.GetById(task.ExecutorId);
+
+        if (executor == null)
+        {
+            throw new NotFoundException(nameof(User), "User-Executor with this Id was not founded");
+        }
+
+        else if (executor.Role != Role.Son && executor.Role != Role.Daughter)
+        {
+            throw new CreateTaskException(nameof(task.ExecutorId), "Executor cannot be of legal age");
+        }
+
+        var customer = _db.User.GetById(task.CustomerId);
+
+        if (customer == null)
+        {
+            throw new NotFoundException(nameof(User), "User_Customer with this Id was not founded");
+        }
+
+        else if (customer.Role == Role.Son || customer.Role != Role.Daughter)
+        {
+            throw new CreateTaskException(nameof(task.CustomerId), "Customer cannot be a child");
+        }
+
+        else if (executor.FamilyId != customer.FamilyId)
+        {
+            throw new CreateTaskException("Executor and customer from different families");
+        }
+
+        // сделать такую же проверку в методе Update
+        // todo: родитель передаёт не свой id
+
         await _db.Task.AddAsync(task);
         return task;
     }
