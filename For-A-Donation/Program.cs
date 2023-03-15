@@ -1,9 +1,9 @@
-using For_A_Donation.Models.DataBase;
-using For_A_Donation.Services;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using For_A_Donation.Helpers;
-using For_A_Donation.UnitOfWork;
+using For_A_Donation.Infrastructure.Data;
+using For_A_Donation.Services.Business;
+using For_A_Donation.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<Context>(option => option.UseSqlite("Data Source = For-A-Donation.db"));
+//builder.Services.AddDbContext<Context>(option => option.UseSqlite(
+//"Server=127.0.0.1; User Id=postgres; Password=admin; Port=5432; Database=For-A-Donation_PostreSQL.db"));
 
 builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();

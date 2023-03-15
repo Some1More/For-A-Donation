@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using For_A_Donation.Domain.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using For_A_Donation.Models.DataBase;
 
 namespace For_A_Donation.Helpers.Attributes;
 

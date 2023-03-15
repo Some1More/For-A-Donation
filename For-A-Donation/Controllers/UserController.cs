@@ -1,12 +1,12 @@
 ﻿using AnimalAPI.Helpers.Attributes;
 using AutoMapper;
-using For_A_Donation.Exceptions;
+using For_A_Donation.Domain.Core.Enums;
+using For_A_Donation.Domain.Core.Models;
+using For_A_Donation.Domain.Interfaces;
 using For_A_Donation.Helpers.Attributes;
-using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
-using For_A_Donation.UnitOfWork;
+using For_A_Donation.Services.Interfaces.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -151,13 +151,15 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpDelete("{id:Guid}")]
+    [HttpDelete()]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete()
     {
         try
         {
-            await _userService.Delete(id);
+            var user = HttpContext.Items["User"] as User;
+
+            await _userService.Delete(user.Id);
             await _unitOfWork.SaveChangesAsync();
 
             return Ok();

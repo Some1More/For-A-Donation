@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
-using For_A_Donation.Exceptions;
+using For_A_Donation.Domain.Core.Models;
+using For_A_Donation.Domain.Interfaces;
 using For_A_Donation.Helpers.Attributes;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Services.Interfaces;
-using For_A_Donation.UnitOfWork;
+using For_A_Donation.Services.Interfaces.Exceptions;
+using For_A_Donation.Services.Interfaces.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -91,7 +93,8 @@ public class TaskController : ControllerBase
     {
         try
         {
-            var res = _taskService.GetByFilter(model);
+            var filter = _mapper.Map<TaskFilter>(model);
+            var res = _taskService.GetByFilter(filter);
             var result = _mapper.Map<List<TaskViewModelResponse>>(res);
 
             return Ok(result);
@@ -108,7 +111,10 @@ public class TaskController : ControllerBase
     {
         try
         {
-            var task = _mapper.Map<Models.DataBase.Task>(model);
+            var user = HttpContext.Items["User"] as User;
+
+            var task = _mapper.Map<Domain.Core.Models.Task>(model);
+            task.CustomerId = user.Id;
 
             var res = await _taskService.Create(task);
             await _unitOfWork.SaveChangesAsync();
@@ -125,6 +131,10 @@ public class TaskController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
         finally
         {
             _unitOfWork.Dispose();
@@ -137,8 +147,11 @@ public class TaskController : ControllerBase
     {
         try
         {
-            var task = _mapper.Map<Models.DataBase.Task>(model);
+            var user = HttpContext.Items["User"] as User;
+
+            var task = _mapper.Map<Domain.Core.Models.Task>(model);
             task.Id = id;
+            task.CustomerId = user.Id;
 
             var res = await _taskService.Update(task);
             await _unitOfWork.SaveChangesAsync();

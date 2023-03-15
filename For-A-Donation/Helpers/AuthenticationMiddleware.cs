@@ -1,7 +1,7 @@
-﻿using For_A_Donation.Services.Interfaces;
+﻿using For_A_Donation.Domain.Core.Models;
+using For_A_Donation.Services.Interfaces;
+using For_A_Donation.Services.Interfaces.Exceptions;
 using System.Text;
-using For_A_Donation.Models.DataBase;
-using For_A_Donation.Exceptions;
 using Task = System.Threading.Tasks.Task;
 
 namespace For_A_Donation.Helpers;

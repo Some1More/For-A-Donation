@@ -1,4 +1,4 @@
-﻿using For_A_Donation.Models.Enums;
+﻿using For_A_Donation.Domain.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace For_A_Donation.Models.ViewModels.Reward;
