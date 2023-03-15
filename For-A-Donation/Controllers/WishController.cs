@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using For_A_Donation.Exceptions;
+using For_A_Donation.Domain.Core.Models;
+using For_A_Donation.Domain.Interfaces;
 using For_A_Donation.Helpers.Attributes;
-using For_A_Donation.Models.DataBase;
 using For_A_Donation.Models.ViewModels.Wish;
 using For_A_Donation.Services.Interfaces;
-using For_A_Donation.UnitOfWork;
+using For_A_Donation.Services.Interfaces.Exceptions;
+using For_A_Donation.Services.Interfaces.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;
@@ -67,11 +68,12 @@ public class WishController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<List<WishViewModelResponse>> GetByFilter(WithFilterViewModel model)
+    public ActionResult<List<WishViewModelResponse>> GetByFilter(WishFilterViewModel model)
     {
         try
         {
-            var res = _wishService.GetByFilter(model);
+            var filter = _mapper.Map<WishFilter>(model);
+            var res = _wishService.GetByFilter(filter);
             var result = _mapper.Map<List<WishViewModelResponse>>(res);
 
             return Ok(result);

@@ -1,12 +1,12 @@
 ﻿using AnimalAPI.Helpers.Attributes;
 using AutoMapper;
-using For_A_Donation.Exceptions;
+using For_A_Donation.Domain.Core.Enums;
+using For_A_Donation.Domain.Core.Models;
+using For_A_Donation.Domain.Interfaces;
 using For_A_Donation.Helpers.Attributes;
-using For_A_Donation.Models.DataBase;
-using For_A_Donation.Models.Enums;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Services.Interfaces;
-using For_A_Donation.UnitOfWork;
+using For_A_Donation.Services.Interfaces.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace For_A_Donation.Controllers;

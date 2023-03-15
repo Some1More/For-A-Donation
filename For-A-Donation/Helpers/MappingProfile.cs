@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
-using For_A_Donation.Models.DataBase;
+using For_A_Donation.Domain.Core.Models;
 using For_A_Donation.Models.ViewModels.Family;
 using For_A_Donation.Models.ViewModels.Purpose;
 using For_A_Donation.Models.ViewModels.Reward;
 using For_A_Donation.Models.ViewModels.Task;
 using For_A_Donation.Models.ViewModels.User;
 using For_A_Donation.Models.ViewModels.Wish;
-using Task = For_A_Donation.Models.DataBase.Task;
+using For_A_Donation.Services.Interfaces.Models;
+using Task = For_A_Donation.Domain.Core.Models.Task;
 
 namespace For_A_Donation.Helpers;
 
@@ -47,5 +48,9 @@ public class MappingProfile : Profile
         CreateMap<WishViewModelRequest, Wish>();
 
         CreateMap<Wish, WishViewModelResponse>();
+
+        CreateMap<TaskFilterViewModel, TaskFilter>();
+
+        CreateMap<WishFilterViewModel,  WishFilter>();
     }
 }

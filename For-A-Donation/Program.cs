@@ -1,9 +1,9 @@
-using For_A_Donation.Models.DataBase;
-using For_A_Donation.Services;
 using For_A_Donation.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using For_A_Donation.Helpers;
-using For_A_Donation.UnitOfWork;
+using For_A_Donation.Infrastructure.Data;
+using For_A_Donation.Services.Business;
+using For_A_Donation.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
