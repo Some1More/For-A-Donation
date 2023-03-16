@@ -50,6 +50,11 @@ public class UserService : IUserService
             throw new ObjectNotUniqueException("User with this phone number already exists");
         }
 
+        else if (_db.Family.GetById(user.FamilyId.Value) == null)
+        {
+            throw new NotFoundException(nameof(user.FamilyId), "Family with this Id was not founded");
+        }
+
         user.Password = HashPassword(user.Password);
 
         await _db.User.AddAsync(user);
@@ -71,11 +76,16 @@ public class UserService : IUserService
             throw new NotFoundException(nameof(user), "Account with this id was not founded!");
         }
 
-        if (user.Password != res.Password)
+        else if (user.Password != res.Password)
         {
             throw new ForbiddenExeption("Updating a non-own account");
         }
-            
+
+        else if (_db.Family.GetById(user.FamilyId.Value) == null)
+        {
+            throw new NotFoundException(nameof(user.FamilyId), "Family with this Id was not founded");
+        }
+
         await _db.User.UpdateAsync(user);
 
         return user;
@@ -86,9 +96,9 @@ public class UserService : IUserService
         var user = _db.User.GetById(id);
 
         if (user == null)
+        {
             throw new NotFoundException(nameof(User), "Account with this id was not founded");
-
-        // todo: удаление не своего аккаунта
+        }
 
         await _db.User.RemoveAsync(user);
     }

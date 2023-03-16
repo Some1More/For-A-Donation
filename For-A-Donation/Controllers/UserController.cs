@@ -85,13 +85,14 @@ public class UserController : ControllerBase
         try
         {
             var user = _mapper.Map<User>(model);
+            var family = new Family();
 
             if (string.IsNullOrEmpty(user.FamilyId.ToString()))
             {
-                var family = await _familyService.Create();
+                family = await _familyService.Create();
                 user.FamilyId = family.Id;
             }
-            
+
             var res = await _userService.Registration(user);
             res.Progress = null;
 
@@ -110,6 +111,10 @@ public class UserController : ControllerBase
         catch (ObjectNotUniqueException ex)
         {   
             return Conflict(ex.Message);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
         }
         finally
         {
