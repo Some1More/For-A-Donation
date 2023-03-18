@@ -169,7 +169,7 @@ public class TaskService : ITaskServicecs
             throw new NotFoundException(nameof(User), "User_Customer with this Id was not founded");
         }
 
-        else if (customer.Role == Role.Son || customer.Role != Role.Daughter)
+        else if (customer.Role == Role.Son || customer.Role == Role.Daughter)
         {
             throw new CreateTaskException(nameof(customerId), "Customer cannot be a child");
         }
