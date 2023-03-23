@@ -16,9 +16,9 @@ builder.Services.AddControllers().AddNewtonsoftJson(x =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<Context>(option => option.UseSqlite("Data Source = For-A-Donation.db"));
-//builder.Services.AddDbContext<Context>(option => option.UseSqlite(
-//"Server=127.0.0.1; User Id=postgres; Password=admin; Port=5432; Database=For-A-Donation_PostreSQL.db"));
+//builder.Services.AddDbContext<Context>(option => option.UseSqlite("Data Source = For-A-Donation.db"));
+builder.Services.AddDbContext<Context>(option => option.UseNpgsql(
+"Server=127.0.0.1; User Id=postgres; Password=admin; Port=5432; Database=For-A-Donation_PostreSQL.db"));
 
 builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
