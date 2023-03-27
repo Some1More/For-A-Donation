@@ -67,9 +67,4 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     {
         await Task.Run(() => _db.RemoveRange(entities));
     }
-
-    public async Task SaveGangesAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
 }
