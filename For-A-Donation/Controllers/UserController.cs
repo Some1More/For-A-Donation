@@ -91,9 +91,8 @@ public class UserController : ControllerBase
             {
                 family = await _familyService.Create();
                 user.FamilyId = family.Id;
+                user.Family = family;
             }
-
-            await _unitOfWork.SaveChangesAsync();
 
             var res = await _userService.Registration(user);
             res.Progress = null;
@@ -104,8 +103,7 @@ public class UserController : ControllerBase
                 res.Progress = progress;
             }
 
-            await _unitOfWork.Family.SaveGangesAsync();
-            await _unitOfWork.User.SaveGangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             var result = _mapper.Map<UserViewModelResponse>(res);
 
