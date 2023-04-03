@@ -7,10 +7,11 @@ namespace For_A_Donation.Services.Interfaces;
 public interface ITaskServicecs
 {
     /// <summary>
-    /// Получения списка всех невыполненных задач
+    /// Получения списка всех задач в семье
     /// </summary>
-    /// <returns> Список невыполненных задач </returns>
-    List<Task> GetAll();
+    /// <param name="familyId"> Id семьи </param>
+    /// <returns> Список задач в семье </returns>
+    List<Task> GetAllFamilyTask(Guid familyId);
 
     /// <summary>
     /// Получение задачи по Id

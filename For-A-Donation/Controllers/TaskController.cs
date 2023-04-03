@@ -30,11 +30,12 @@ public class TaskController : ControllerBase
 
     [HttpGet]
     [Authorize(new string[] { "Father", "Mother", "Son", "Daughter", "Grandfather", "Grandmother" })]
-    public ActionResult< List<TaskViewModelResponse> > GetAll()
+    public ActionResult< List<TaskViewModelResponse> > GetAllFamilyTask()
     {
         try
         {
-            var res = _taskService.GetAll();
+            var familyId = ((User)HttpContext.Items["User"]).FamilyId;
+            var res = _taskService.GetAllFamilyTask(familyId.Value);
             var result = _mapper.Map<List<TaskViewModelResponse>>(res);
 
             return Ok(result);
@@ -115,6 +116,7 @@ public class TaskController : ControllerBase
 
             var task = _mapper.Map<Domain.Core.Models.Task>(model);
             task.CustomerId = user.Id;
+            task.FamilyId = user.FamilyId.Value;
 
             var res = await _taskService.Create(task);
             await _unitOfWork.SaveChangesAsync();

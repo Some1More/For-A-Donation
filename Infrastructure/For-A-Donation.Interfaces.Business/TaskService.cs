@@ -4,6 +4,7 @@ using For_A_Donation.Domain.Interfaces;
 using For_A_Donation.Services.Interfaces;
 using For_A_Donation.Services.Interfaces.Exceptions;
 using For_A_Donation.Services.Interfaces.Models;
+using System.Security;
 using Task = For_A_Donation.Domain.Core.Models.Task;
 
 namespace For_A_Donation.Services.Business;
@@ -17,9 +18,16 @@ public class TaskService : ITaskServicecs
         _db = db;
     }
 
-    public List<Task> GetAll()
+    public List<Task> GetAllFamilyTask(Guid familyId)
     {
-        return _db.Task.GetAll().ToList();
+        var family = _db.Family.GetById(familyId);
+
+        if (family == null)
+        {
+            throw new SecurityException();
+        }
+
+        return _db.Task.GetAll().Where(x => x.FamilyId == familyId).ToList();
     }
 
     public Task GetById(Guid id)

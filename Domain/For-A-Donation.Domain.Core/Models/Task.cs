@@ -12,6 +12,8 @@ public class Task : BaseEntity
 
     public Guid CustomerId { get; set; }
 
+    public Guid FamilyId { get; set; }
+
     public int Points { get; set; }
 
     public CategoryOfTask CategoryOfTask { get; set; }
